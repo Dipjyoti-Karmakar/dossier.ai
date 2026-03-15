@@ -1156,39 +1156,39 @@ Return a strict JSON object (NO markdown formatting around it, just raw JSON) ma
 }
 `;
 
-            let data = null;
-            const proxyUrl = `https://my-api-proxy-git.vercel.app/api/gemini?prompt=${encodeURIComponent(prompt)}`;
+            const proxyUrl = "https://my-api-proxy-git.vercel.app/api/gemini";
 
-            const res = await fetch(proxyUrl);
+            const response = await fetch(proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            });
 
-            if (!res.ok) {
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Vercel Error:", errorData);
                 throw new Error('Proxy error');
             }
             
-            data = await res.json();
+            const data = await response.json();
             
-            let textRaw = "";
-            // Depending on how your proxy is structured, it might return the standard Gemini object
-            // or a simplified text response. This handles both!
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                textRaw = data.candidates[0].content.parts[0].text;
-            } else if (data.text) {
-                textRaw = data.text;
-            } else {
-                textRaw = JSON.stringify(data);
-            }
+            const aiResponseText = data.candidates[0].content.parts[0].text;
             
             // Cleanup just in case Gemini adds markdown even with mimetype
-            const cleanedText = textRaw.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const cleanedText = aiResponseText.replace(/```json/gi, '').replace(/```/g, '').trim();
             const aiData = JSON.parse(cleanedText);
 
             renderAIData(aiData);
 
-        } catch (err) {
-            console.error("AI Error:", err);
-            const errEl = document.getElementById('ai-error');
-            errEl.textContent = "AI is currently unavailable";
-            errEl.classList.remove('hidden');
+        } catch (error) {
+            console.error("AI Error:", error);
+            const container = document.getElementById('ai-error');
+            if (container) {
+                container.innerText = "AI summary currently unavailable.";
+                container.classList.remove('hidden');
+            }
         } finally {
             document.getElementById('ai-loading').classList.add('hidden');
         }
