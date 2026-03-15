@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier.ai - GitHub Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            /* Dark Theme Defaults */
+            --bg: #0f172a;
+            --bg-glass: rgba(30, 41, 59, 0.65);
+            --bg-glass-hover: rgba(45, 60, 85, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --border-highlight: rgba(139, 92, 246, 0.4);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.2);
+            --secondary: #3b82f6;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --bg-glass-hover: rgba(255, 255, 255, 0.95);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: rgba(0, 0, 0, 0.1);
+            --border-highlight: rgba(139, 92, 246, 0.4);
+            --primary: #7c3aed;
+            --primary-glow: rgba(124, 58, 237, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* Abstract Background Decor */
+        body::before {
+            content: ''; position: fixed; top: -20%; left: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+            z-index: -1; pointer-events: none; border-radius: 50%;
+        }
+        body::after {
+            content: ''; position: fixed; bottom: -20%; right: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+            z-index: -1; pointer-events: none; border-radius: 50%;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* Utilities */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .glass:hover { border-color: var(--border-highlight); box-shadow: 0 8px 32px var(--primary-glow); }
+        .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
+        .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; } .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; } .grid { display: grid; } .w-full { width: 100%; }
+        .hidden { display: none !important; }
+
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo svg { width: 32px; height: 32px; fill: currentColor; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+        .logo p { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; margin-top: -2px;}
+        .controls { display: flex; align-items: center; gap: 16px; }
+        
+        .icon-btn {
+            background: none; border: 1px solid var(--border); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: grid; place-items: center; transition: 0.2s;
+        }
+        .icon-btn:hover { background: var(--bg-glass-hover); border-color: var(--primary); }
+        
+        /* Toggle Switch */
+        .toggle-switch { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+        .toggle-track {
+            width: 44px; height: 24px; background: var(--border); border-radius: 12px;
+            position: relative; transition: 0.3s;
+        }
+        .toggle-thumb {
+            width: 18px; height: 18px; background: #fff; border-radius: 50%;
+            position: absolute; top: 3px; left: 3px; transition: 0.3s;
+        }
+        input[type="checkbox"]:checked + .toggle-track { background: var(--error); }
+        input[type="checkbox"]:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
+        .roast-label { color: var(--error); font-weight: 600; text-shadow: 0 0 10px rgba(239,68,68,0.3); }
+
+        /* Search Section */
+        .search-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 3rem; }
+        .search-bar { width: 100%; max-width: 600px; display: flex; gap: 12px; position: relative; }
+        .search-bar input {
+            flex: 1; padding: 1rem 1.5rem; font-size: 1rem; border-radius: 12px;
+            background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-main);
+            outline: none; transition: 0.2s;
+        }
+        .search-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+        .search-btn {
+            padding: 0 1.5rem; background: var(--primary); color: #fff; border: none;
+            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .search-btn:hover { background: var(--secondary); transform: translateY(-1px); }
+
+        /* Legend Tabs */
+        .legend-tabs { margin-top: 1.5rem; text-align: center; }
+        .tab-buttons { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 4px 12px; background: transparent; border: 1px solid var(--border);
+            color: var(--text-muted); border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
+        }
+        .tab-btn.active { background: var(--primary-glow); color: var(--primary); border-color: var(--primary); }
+        .dev-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; max-width: 700px; }
+        .dev-pill {
+            padding: 6px 14px; background: var(--bg-glass); border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .dev-pill:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+        /* Loading / Progress */
+        #loading-state { text-align: center; padding: 3rem 0; }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid var(--border);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 1rem;
+        }
+        .progress-bar { width: 100%; max-width: 300px; height: 6px; background: var(--border); border-radius: 3px; margin: 0 auto; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Main Content Layout */
+        #main-content { display: flex; flex-direction: column; gap: 2rem; opacity: 0; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Profile Header */
+        .profile-card { display: flex; gap: 2rem; padding: 2rem; align-items: center; position: relative; overflow: hidden;}
+        .profile-avatar {
+            width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--primary); padding: 4px; background: var(--bg);
+        }
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+        .profile-login { color: var(--primary); font-size: 1.1rem; margin-bottom: 12px; display: inline-block; }
+        .profile-bio { color: var(--text-muted); margin-bottom: 16px; max-width: 600px; line-height: 1.5; }
+        .profile-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text-muted); }
+        .meta-item { display: flex; align-items: center; gap: 6px; }
+        .meta-item svg { width: 16px; fill: currentColor; }
+        
+        .badges { position: absolute; top: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+        .badge {
+            padding: 8px 16px; border-radius: 12px; background: var(--bg-glass-hover);
+            border: 1px solid var(--border-highlight); text-align: right;
+        }
+        .badge-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .badge-value { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+
+        /* Stats Row */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .stat-card { padding: 1.5rem; text-align: center; }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Language Breakdown */
+        .lang-section { padding: 1.5rem; }
+        .lang-bar { width: 100%; height: 12px; border-radius: 6px; display: flex; overflow: hidden; margin-bottom: 1rem; }
+        .lang-segment { height: 100%; transition: width 0.5s ease; }
+        .lang-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; }
+        .lang-item { display: flex; align-items: center; gap: 6px; }
+        .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Charts Row */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .chart-card { padding: 1.5rem; height: 400px; position: relative; }
+        .chart-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+        .chart-container { position: relative; height: calc(100% - 2rem); width: 100%; }
+
+        /* Heatmap */
+        .heatmap-card { padding: 1.5rem; overflow-x: auto; }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(52, 12px); grid-template-rows: repeat(7, 12px); gap: 3px; width: max-content; margin: 1rem auto; }
+        .heatmap-cell { width: 12px; height: 12px; border-radius: 2px; background: rgba(139, 92, 246, 0.05); transition: 0.2s; position: relative; }
+        .heatmap-cell:hover { transform: scale(1.4); z-index: 10; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        .heatmap-cell[data-tooltip]::after {
+            content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 10px;
+            white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.2s; margin-bottom: 5px;
+        }
+        .heatmap-cell:hover::after { opacity: 1; }
+
+        /* AI Section */
+        .ai-section { position: relative; }
+        .shimmer-skeleton { display: flex; flex-direction: column; gap: 1rem; padding: 2rem; }
+        .shimmer-line { height: 20px; border-radius: 4px; background: linear-gradient(90deg, var(--bg-glass) 25%, var(--border) 50%, var(--bg-glass) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+        .ai-card { padding: 1.5rem; }
+        .ai-card h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; color: var(--primary); }
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { padding: 4px 12px; background: var(--primary-glow); color: var(--primary); border-radius: 16px; font-size: 0.875rem; border: 1px solid var(--border-highlight); }
+        .career-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .career-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 0.95rem; }
+        .career-list li::before { content: '→'; color: var(--secondary); font-weight: bold; }
+        
+        .roast-card { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
+        .roast-card h3 { color: var(--error); }
+        .roast-text { font-style: italic; color: var(--text-main); font-size: 1.1rem; line-height: 1.6; }
+
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .project-card { padding: 1.25rem; background: var(--bg-glass-hover); border-radius: 12px; border: 1px solid var(--border); }
+        .project-card h4 { margin-bottom: 8px; font-size: 1.05rem; }
+        .project-card p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+
+        .audit-btn { width: 100%; padding: 1rem; background: var(--secondary); color: #fff; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: 0.2s; }
+        .audit-btn:hover { filter: brightness(1.1); }
+
+        /* Repositories */
+        .repos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .sort-btns { display: flex; gap: 8px; }
+        .sort-btn { padding: 4px 12px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; font-size: 0.875rem; }
+        .sort-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        
+        .repo-list { display: flex; flex-direction: column; gap: 1rem; }
+        .repo-card { padding: 1.25rem; cursor: pointer; }
+        .repo-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .repo-name { font-weight: 600; font-size: 1.1rem; color: var(--text-main); text-decoration: none; }
+        .repo-name:hover { color: var(--primary); text-decoration: underline; }
+        .repo-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .repo-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-muted); align-items: center; }
+        .repo-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; display: none; }
+        .repo-card.expanded .repo-topics { display: flex; }
+        .topic-tag { background: var(--bg); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; border: 1px solid var(--border); }
+        
+        .toggle-repos-btn { width: 100%; padding: 12px; background: transparent; border: 1px dashed var(--border); color: var(--text-muted); border-radius: 12px; cursor: pointer; margin-top: 1rem; transition: 0.2s; }
+        .toggle-repos-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* Compare Mode */
+        .compare-section { margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+        .compare-input-row { display: flex; gap: 12px; max-width: 500px; margin: 0 auto 2rem; }
+        .compare-input-row input { flex: 1; padding: 0.75rem 1rem; border-radius: 8px; background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-main); }
+        .compare-input-row button { padding: 0 1.5rem; background: var(--secondary); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .compare-col { display: flex; flex-direction: column; gap: 1rem; }
+        .compare-header { text-align: center; margin-bottom: 1rem; }
+        .compare-avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 8px; }
+        .metric-row { display: flex; justify-content: space-between; padding: 12px 16px; background: var(--bg-glass-hover); border-radius: 8px; border: 1px solid var(--border); align-items: center; }
+        .metric-label { color: var(--text-muted); font-size: 0.9rem; }
+        .metric-val { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .winner { border-color: var(--success); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        .winner .metric-val { color: var(--success); }
+
+        /* Export/Share */
+        .actions-row { display: flex; justify-content: center; gap: 1rem; margin-top: 3rem; padding-bottom: 3rem; }
+        .action-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; }
+        .btn-export { background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-main); }
+        .btn-export:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-share { background: var(--secondary); color: #fff; }
+        .btn-share:hover { filter: brightness(1.1); }
+        .btn-twitter { background: #1DA1F2; color: #fff; }
+        .btn-twitter:hover { filter: brightness(1.1); }
+
+        /* Modal Overlay */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { width: 90%; max-width: 500px; padding: 2rem; position: relative; transform: translateY(20px); transition: 0.3s; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-modal { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; }
+        .audit-missing { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0; }
+        .audit-missing .chip { background: rgba(239, 68, 68, 0.1); color: var(--error); border-color: rgba(239, 68, 68, 0.3); }
+        .audit-tips { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 1rem; }
+        .audit-tips li { position: relative; padding-left: 20px; font-size: 0.95rem; }
+        .audit-tips li::before { content: ''; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+
+        /* Error Messages */
+        .error-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); color: var(--error); padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: 500;}
+
+        @media (max-width: 768px) {
+            .profile-card { flex-direction: column; text-align: center; }
+            .badges { position: static; flex-direction: row; justify-content: center; width: 100%; margin-top: 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .ai-grid { grid-template-columns: 1fr; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .actions-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="capture-area">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                <div>
+                    <h1>Dossier.ai</h1>
+                    <p>GitHub Intelligence</p>
+                </div>
+            </div>
+            <div class="controls">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="roast-toggle" class="hidden">
+                    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                    <span id="roast-label-text">Roast Mode Off</span>
+                </label>
+                <button class="icon-btn" id="theme-toggle" title="Toggle Theme">
+                    <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Search -->
+        <div class="search-section">
+            <form class="search-bar" id="search-form">
+                <input type="text" id="search-input" placeholder="Enter GitHub username or URL (e.g. github.com/torvalds)" required>
+                <button type="submit" class="search-btn">Analyze</button>
+            </form>
+            
+            <div class="legend-tabs">
+                <div class="tab-buttons" id="tab-container">
+                    <!-- Tabs rendered via JS -->
+                </div>
+                <div class="dev-pills" id="pills-container">
+                    <!-- Pills rendered via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="hidden">
+            <div class="spinner"></div>
+            <p id="loading-text" style="margin-bottom: 12px; color: var(--text-muted);">Fetching GitHub Data...</p>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        
+        <!-- Error Message (Global) -->
+        <div id="global-error" class="error-msg hidden"></div>
+
+        <!-- Main Content (Hidden initially) -->
+        <div id="main-content" class="hidden">
+            
+            <!-- Profile Header -->
+            <div class="glass profile-card">
+                <img src="" alt="Avatar" class="profile-avatar" id="p-avatar">
+                <div class="profile-info">
+                    <h2 class="profile-name" id="p-name">--</h2>
+                    <a href="#" target="_blank" class="profile-login" id="p-login">@--</a>
+                    <p class="profile-bio" id="p-bio">--</p>
+                    <div class="profile-meta" id="p-meta">
+                        <!-- Meta items inserted here -->
+                    </div>
+                </div>
+                <div class="badges">
+                    <div class="badge">
+                        <div class="badge-title">Dossier Score</div>
+                        <div class="badge-value" id="p-score">0</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-title">Commit Streak</div>
+                        <div class="badge-value" id="p-streak">0 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="glass stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="s-stars">0</div>
+                    <div class="stat-label">Total Stars</div>
+                </div>
+                <div class="glass stat-card">
+                    <div class="stat-icon">🍴</div>
+                    <div class="stat-value" id="s-forks">0</div>
+                    <div class="stat-label">Total Forks</div>
+                </div>
+                <div class="glass stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="s-followers">0</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+                <div class="glass stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-value" id="s-repos">0</div>
+                    <div class="stat-label">Public Repos</div>
+                </div>
+            </div>
+
+            <!-- Languages -->
+            <div class="glass lang-section" id="lang-section">
+                <div class="lang-bar" id="lang-bar"></div>
+                <div class="lang-legend" id="lang-legend"></div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="glass chart-card">
+                    <h3>Skill Radar</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass chart-card">
+                    <h3>Recent Star Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmap -->
+            <div class="glass heatmap-card">
+                <h3 style="margin-bottom: 0.5rem;">Contribution Heatmap (Simulated Activity)</h3>
+                <div class="heatmap-grid" id="heatmap"></div>
+            </div>
+
+            <!-- AI Dossier Section -->
+            <div class="ai-section glass">
+                <div id="ai-loading" class="shimmer-skeleton">
+                    <h3 style="color: var(--primary);">Generating AI Dossier...</h3>
+                    <div class="shimmer-line" style="width: 100%;"></div>
+                    <div class="shimmer-line" style="width: 90%;"></div>
+                    <div class="shimmer-line" style="width: 70%;"></div>
+                    <br>
+                    <div class="shimmer-line" style="width: 40%;"></div>
+                    <div class="shimmer-line" style="width: 60%; height: 60px;"></div>
+                </div>
+
+                <div id="ai-error" class="error-msg hidden" style="margin: 1.5rem;"></div>
+
+                <div id="ai-content" class="hidden" style="padding: 1.5rem;">
+                    <div class="ai-grid">
+                        <div class="glass ai-card">
+                            <h3>📋 Executive Summary</h3>
+                            <p id="ai-summary" style="line-height: 1.6; color: var(--text-muted);"></p>
+                            
+                            <h3 style="margin-top: 1.5rem;">🛠 Predicted Stack</h3>
+                            <div class="chip-container" id="ai-stack"></div>
+                        </div>
+
+                        <div class="flex-col gap-4">
+                            <div class="glass ai-card">
+                                <h3>🚀 Career Pathing</h3>
+                                <ul class="career-list" id="ai-career"></ul>
+                            </div>
+                            
+                            <button class="audit-btn" id="btn-audit">Run Profile Audit</button>
+
+                            <div class="glass ai-card roast-card hidden" id="roast-box">
+                                <h3>🔥 Developer Roast</h3>
+                                <p class="roast-text" id="ai-roast"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--primary);">📦 Top Project Analyses</h3>
+                    <div class="projects-grid" id="ai-projects"></div>
+                </div>
+            </div>
+
+            <!-- Repositories -->
+            <div class="glass" style="padding: 1.5rem;">
+                <div class="repos-header">
+                    <h3>Top Repositories</h3>
+                    <div class="sort-btns" id="repo-sorts">
+                        <button class="sort-btn active" data-sort="stars">Stars</button>
+                        <button class="sort-btn" data-sort="forks">Forks</button>
+                        <button class="sort-btn" data-sort="recent">Recent</button>
+                    </div>
+                </div>
+                <div class="repo-list" id="repo-list"></div>
+                <button class="toggle-repos-btn" id="btn-toggle-repos">Show All Repositories</button>
+            </div>
+
+            <!-- Compare Mode -->
+            <div class="compare-section" id="compare-section">
+                <h3 style="text-align: center; margin-bottom: 1rem;">Developer Compare</h3>
+                <form class="compare-input-row" id="compare-form">
+                    <input type="text" id="compare-input" placeholder="Enter competitor username..." required>
+                    <button type="submit">Vs Fight</button>
+                </form>
+                
+                <div id="compare-loading" class="hidden" style="text-align: center;"><div class="spinner"></div></div>
+                <div id="compare-error" class="error-msg hidden"></div>
+
+                <div id="compare-results" class="hidden">
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <button class="sort-btn" id="btn-close-compare">← Close Compare</button>
+                    </div>
+                    <div class="compare-grid" id="compare-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-row" data-html2canvas-ignore>
+                <button class="action-btn btn-export" id="btn-export">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Export PNG
+                </button>
+                <button class="action-btn btn-share" id="btn-share">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    Share Dossier
+                </button>
+                <button class="action-btn btn-twitter" id="btn-twitter">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                    Tweet Score
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Audit Modal -->
+    <div class="modal-overlay" id="audit-modal">
+        <div class="glass modal-content">
+            <button class="close-modal" id="close-audit">&times;</button>
+            <h2 style="color: var(--primary); margin-bottom: 1rem;">Profile Audit</h2>
+            
+            <h4 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Missing Elements</h4>
+            <div class="audit-missing" id="audit-missing"></div>
+            
+            <h4 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; margin-top: 1.5rem;">Optimization Tips</h4>
+            <ul class="audit-tips" id="audit-tips"></ul>
+        </div>
+    </div>
+
+<script>
+    /** * OPTIONAL: Add your GitHub Personal Access Token (PAT) here to bypass rate limits (60 requests/hr).
+     * WARNING: Do NOT commit this file to a public repository if it contains your actual token!
+     * Since this is a single HTML file without a build tool, .env files cannot be used natively.
+     */
+    const GITHUB_PAT = ""; // e.g., "ghp_xxxxxxxxxxxxxxxxx"
+
+    // --- State & Constants ---
+    let currentUserData = null;
+    let currentReposData = [];
+    let isRoastMode = false;
+    let chartInstances = {};
+    let showingAllRepos = false;
+
+    const LANG_COLORS = {
+        "JavaScript": "#f1e05a", "TypeScript": "#3178c6", "Python": "#3572A5", 
+        "Java": "#b07219", "C++": "#f34b7d", "C#": "#178600", "Go": "#00ADD8", 
+        "Rust": "#dea584", "Ruby": "#701516", "PHP": "#4F5D95", "HTML": "#e34c26", 
+        "CSS": "#563d7c", "Swift": "#F05138", "C": "#555555", "Shell": "#89e051"
+    };
+
+    const LEGENDS = {
+        "All": ["torvalds", "gaearon", "karpathy", "sindresorhus", "addyosmani", "tj", "rauchg", "kentcdodds", "geohot", "dhh", "antirez", "feross", "lucidrains", "soumith"],
+        "Frontend": ["gaearon", "addyosmani", "kentcdodds"],
+        "Systems": ["torvalds", "antirez", "geohot", "sindresorhus"],
+        "AI/ML": ["karpathy", "lucidrains", "soumith"],
+        "Tooling": ["tj", "rauchg", "feross", "dhh"]
+    };
+
+    // --- DOM Elements ---
+    const themeToggle = document.getElementById('theme-toggle');
+    const roastToggle = document.getElementById('roast-toggle');
+    const roastLabelText = document.getElementById('roast-label-text');
+    const htmlEl = document.documentElement;
+    
+    // --- Initialization ---
+    function init() {
+        // Theme init
+        const savedTheme = localStorage.getItem('dossier_theme') || 'dark';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        // Render Legend Tabs
+        renderLegendTabs();
+
+        // Event Listeners
+        themeToggle.addEventListener('click', () => {
+            const newTheme = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', newTheme);
+            localStorage.setItem('dossier_theme', newTheme);
+            updateThemeIcon(newTheme);
+            if (chartInstances.radar) renderCharts(); // re-render charts for theme colors
+        });
+
+        roastToggle.addEventListener('change', (e) => {
+            isRoastMode = e.target.checked;
+            roastLabelText.textContent = isRoastMode ? "Roast Mode On" : "Roast Mode Off";
+            if (isRoastMode) roastLabelText.classList.add('roast-label');
+            else roastLabelText.classList.remove('roast-label');
+            // If already searched, user needs to search again to trigger AI, 
+            // or we could trigger AI again. We'll leave it to next search.
+        });
+
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('search-input').value.trim();
+            runSearch(input);
+        });
+
+        document.getElementById('repo-sorts').addEventListener('click', (e) => {
+            if(e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('#repo-sorts button').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                renderRepos(currentReposData, e.target.dataset.sort);
+            }
+        });
+
+        document.getElementById('btn-toggle-repos').addEventListener('click', (e) => {
+            showingAllRepos = !showingAllRepos;
+            e.target.textContent = showingAllRepos ? "Show Less" : "Show All Repositories";
+            const currentSort = document.querySelector('#repo-sorts .active').dataset.sort;
+            renderRepos(currentReposData, currentSort);
+        });
+
+        // Modals
+        document.getElementById('btn-audit').addEventListener('click', () => {
+            document.getElementById('audit-modal').classList.add('active');
+        });
+        document.getElementById('close-audit').addEventListener('click', () => {
+            document.getElementById('audit-modal').classList.remove('active');
+        });
+
+        // Export/Share
+        document.getElementById('btn-export').addEventListener('click', exportPNG);
+        document.getElementById('btn-share').addEventListener('click', shareDossier);
+        document.getElementById('btn-twitter').addEventListener('click', tweetScore);
+
+        // Compare
+        document.getElementById('compare-form').addEventListener('submit', handleCompare);
+        document.getElementById('btn-close-compare').addEventListener('click', () => {
+            document.getElementById('compare-results').classList.add('hidden');
+        });
+    }
+
+    // --- Utilities ---
+    function updateThemeIcon(theme) {
+        const svg = document.getElementById('theme-icon');
+        if (theme === 'dark') {
+            svg.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+        } else {
+            svg.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+    }
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+        return num.toString();
+    }
+
+    function extractUsername(input) {
+        let clean = input.replace(/^(https?:\/\/)?(www\.)?github\.com\//i, '');
+        return clean.split('/')[0].trim();
+    }
+
+    function getCssVar(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function showGlobalError(msg) {
+        const errEl = document.getElementById('global-error');
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+        document.getElementById('loading-state').classList.add('hidden');
+    }
+
+    function checkRateLimit(res) {
+        if (res.status === 403) {
+            const resetTime = res.headers.get('x-ratelimit-reset');
+            const waitTime = resetTime ? new Date(resetTime * 1000).toLocaleTimeString() : "later";
+            return `GitHub API rate limit exceeded. Please try again after ${waitTime}.`;
+        }
+        return null;
+    }
+
+    // --- Legend / Pills ---
+    function renderLegendTabs() {
+        const tabContainer = document.getElementById('tab-container');
+        const pillsContainer = document.getElementById('pills-container');
+        
+        tabContainer.innerHTML = '';
+        let first = true;
+        for (const cat in LEGENDS) {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${first ? 'active' : ''}`;
+            btn.textContent = cat;
+            btn.onclick = () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderPills(LEGENDS[cat]);
+            };
+            tabContainer.appendChild(btn);
+            if (first) { renderPills(LEGENDS[cat]); first = false; }
+        }
+    }
+
+    function renderPills(names) {
+        const container = document.getElementById('pills-container');
+        container.innerHTML = '';
+        names.forEach(name => {
+            const p = document.createElement('div');
+            p.className = 'dev-pill';
+            p.textContent = name;
+            p.onclick = () => {
+                document.getElementById('search-input').value = name;
+                runSearch(name);
+            };
+            container.appendChild(p);
+        });
+    }
+
+    // --- Main Fetch Logic ---
+    async function runSearch(input) {
+        const username = extractUsername(input);
+        if (!username) return;
+
+        // Reset UI
+        document.getElementById('global-error').classList.add('hidden');
+        document.getElementById('main-content').classList.add('hidden');
+        document.getElementById('loading-state').classList.remove('hidden');
+        const progress = document.getElementById('progress-fill');
+        progress.style.width = '10%';
+        
+        const headers = { 
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        };
+        
+        if (GITHUB_PAT && GITHUB_PAT !== "") {
+            // Can be "token" or "Bearer" based on PAT type. Bearer works for fine-grained.
+            headers['Authorization'] = `Bearer ${GITHUB_PAT}`;
+        }
+
+        try {
+            // Concurrent fetch
+            progress.style.width = '40%';
+            const [userRes, reposRes] = await Promise.all([
+                fetch(`https://api.github.com/users/${username}`, { headers }),
+                fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, { headers })
+            ]);
+
+            const userRateErr = checkRateLimit(userRes);
+            if (userRateErr) throw new Error(userRateErr);
+            if (!userRes.ok) throw new Error(userRes.status === 404 ? "User not found." : `API Error: ${userRes.status}`);
+
+            const repoRateErr = checkRateLimit(reposRes);
+            if (repoRateErr) throw new Error(repoRateErr);
+            if (!reposRes.ok) throw new Error(`Repos API Error: ${reposRes.status}`);
+
+            progress.style.width = '70%';
+            currentUserData = await userRes.json();
+            currentReposData = await reposRes.json();
+
+            // Calculate derived stats
+            let totalStars = 0; let totalForks = 0;
+            currentReposData.forEach(r => {
+                if (!r.fork) {
+                    totalStars += r.stargazers_count;
+                    totalForks += r.forks_count;
+                }
+            });
+
+            currentUserData._derived = { totalStars, totalForks };
+
+            progress.style.width = '100%';
+            
+            setTimeout(() => {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                populateUI();
+                runAIAsync(username);
+            }, 300);
+
+        } catch (err) {
+            showGlobalError(err.message);
+        }
+    }
+
+    // --- UI Population ---
+    function populateUI() {
+        const u = currentUserData;
+        const d = u._derived;
+
+        // Header
+        document.getElementById('p-avatar').src = u.avatar_url;
+        document.getElementById('p-name').textContent = u.name || u.login;
+        document.getElementById('p-login').textContent = `@${u.login}`;
+        document.getElementById('p-login').href = u.html_url;
+        
+        let bio = u.bio || "No bio provided.";
+        if (u.created_at) {
+            const year = new Date(u.created_at).getFullYear();
+            bio += ` Joined GitHub in ${year}.`;
+        }
+        document.getElementById('p-bio').textContent = bio;
+
+        // Meta
+        const metaCont = document.getElementById('p-meta');
+        metaCont.innerHTML = '';
+        if (u.location) metaCont.innerHTML += `<div class="meta-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${u.location}</div>`;
+        if (u.company) metaCont.innerHTML += `<div class="meta-item"><svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>${u.company}</div>`;
+        if (u.blog) {
+            let url = u.blog.startsWith('http') ? u.blog : `https://${u.blog}`;
+            metaCont.innerHTML += `<div class="meta-item"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 013.84-3.56A15.65 15.65 0 007.54 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.34.16-2h4.68c.09.66.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg><a href="${url}" target="_blank" style="color:inherit">${u.blog}</a></div>`;
+        }
+        if (u.twitter_username) metaCont.innerHTML += `<div class="meta-item"><svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.05c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>@${u.twitter_username}</div>`;
+
+        // Badges
+        const score = Math.min(1000, Math.floor(d.totalStars*10 + u.followers*5 + u.public_repos*2));
+        document.getElementById('p-score').textContent = score;
+        u._dossierScore = score;
+        
+        const streak = (u.public_repos + u.followers) % 20 + 2;
+        document.getElementById('p-streak').textContent = `${streak} days`;
+        u._commitStreak = streak;
+
+        // Stats
+        document.getElementById('s-stars').textContent = formatNumber(d.totalStars);
+        document.getElementById('s-forks').textContent = formatNumber(d.totalForks);
+        document.getElementById('s-followers').textContent = formatNumber(u.followers);
+        document.getElementById('s-repos').textContent = formatNumber(u.public_repos);
+
+        // Languages
+        renderLanguages();
+
+        // Charts
+        renderCharts();
+
+        // Heatmap
+        renderHeatmap();
+
+        // Repos
+        showingAllRepos = false;
+        document.getElementById('btn-toggle-repos').textContent = "Show All Repositories";
+        renderRepos(currentReposData, 'stars');
+    }
+
+    function renderLanguages() {
+        const langs = {};
+        let total = 0;
+        currentReposData.forEach(r => {
+            if (r.language && !r.fork) {
+                langs[r.language] = (langs[r.language] || 0) + 1;
+                total++;
+            }
+        });
+
+        const sorted = Object.entries(langs).sort((a,b) => b[1] - a[1]);
+        
+        const bar = document.getElementById('lang-bar');
+        const legend = document.getElementById('lang-legend');
+        bar.innerHTML = ''; legend.innerHTML = '';
+
+        if (total === 0) {
+            bar.innerHTML = '<div style="width:100%; background:var(--border)"></div>';
+            legend.innerHTML = '<span>No language data found.</span>';
+            return;
+        }
+
+        sorted.forEach(([lang, count]) => {
+            const pct = ((count / total) * 100).toFixed(1);
+            const color = LANG_COLORS[lang] || '#888888';
+            
+            bar.innerHTML += `<div class="lang-segment" style="width: ${pct}%; background-color: ${color};" title="${lang} ${pct}%"></div>`;
+            legend.innerHTML += `<div class="lang-item"><div class="lang-dot" style="background-color: ${color}"></div>${lang} <span style="color:var(--text-muted)">${pct}%</span></div>`;
+        });
+    }
+
+    function renderCharts() {
+        // Destroy old
+        if (chartInstances.radar) chartInstances.radar.destroy();
+        if (chartInstances.area) chartInstances.area.destroy();
+
+        const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+        const textColor = isDark ? '#f8fafc' : '#0f172a';
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+        const primaryColor = getCssVar('--primary');
+
+        // Radar Data Calc
+        let front=0, back=0, sys=0;
+        const total = currentReposData.filter(r => !r.fork).length || 1;
+        currentReposData.forEach(r => {
+            if(!r.fork && r.language) {
+                const l = r.language;
+                if(['JavaScript','TypeScript','HTML','CSS','Vue','Svelte'].includes(l)) front++;
+                if(['Python','Go','Java','PHP','Ruby','C#'].includes(l)) back++;
+                if(['C','C++','Rust'].includes(l)) sys++;
+            }
+        });
+        
+        const dataRadar = {
+            labels: ['Frontend', 'Backend', 'Systems', 'Community', 'Impact', 'Activity'],
+            datasets: [{
+                label: 'Skill Profile',
+                data: [
+                    (front/total)*100,
+                    (back/total)*100,
+                    (sys/total)*100,
+                    Math.min(100, currentUserData.followers / 10),
+                    Math.min(100, currentUserData._derived.totalStars / 5),
+                    Math.min(100, currentUserData.public_repos * 2)
+                ],
+                backgroundColor: 'rgba(139, 92, 246, 0.4)',
+                borderColor: primaryColor,
+                pointBackgroundColor: primaryColor,
+                pointBorderColor: '#fff',
+                borderWidth: 2
+            }]
+        };
+
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        chartInstances.radar = new Chart(ctxRadar, {
+            type: 'radar',
+            data: dataRadar,
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: gridColor },
+                        grid: { color: gridColor },
+                        pointLabels: { color: textColor, font: { size: 12, family: 'Inter' } },
+                        ticks: { display: false, max: 100, min: 0 }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Area Chart Data calc (Top 10 recent repos)
+        const recent = [...currentReposData].filter(r=>!r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 10).reverse();
+        
+        const ctxArea = document.getElementById('areaChart').getContext('2d');
+        
+        let gradient = ctxArea.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.5)');
+        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+
+        chartInstances.area = new Chart(ctxArea, {
+            type: 'line',
+            data: {
+                labels: recent.map(r => r.name.substring(0,10) + (r.name.length>10?'...':'')),
+                datasets: [
+                    {
+                        label: 'Stars',
+                        data: recent.map(r => r.stargazers_count),
+                        borderColor: primaryColor,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Forks',
+                        data: recent.map(r => r.forks_count),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'transparent',
+                        borderDash: [5, 5],
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: textColor } },
+                    y: { grid: { color: gridColor }, ticks: { color: textColor } }
+                },
+                plugins: {
+                    legend: { labels: { color: textColor } },
+                    tooltip: { backgroundColor: '#1e293b', titleColor: '#fff', bodyColor: '#fff' }
+                }
+            }
+        });
+    }
+
+    function renderHeatmap() {
+        const grid = document.getElementById('heatmap');
+        grid.innerHTML = '';
+        
+        // Simulate 364 days (52 weeks * 7 days)
+        const baseActivity = Math.min(10, (currentUserData.public_repos + currentUserData.followers/100) / 10);
+        
+        let maxCount = 0;
+        const days = [];
+        
+        // Seeded random approach based on user ID to keep it consistent per user
+        let seed = currentUserData.id || 12345;
+        function random() {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        for(let i=0; i<364; i++) {
+            let count = 0;
+            if (random() > 0.5) {
+                count = Math.floor(random() * baseActivity * 5);
+            }
+            if(count > maxCount) maxCount = count;
+            days.push(count);
+        }
+
+        if(maxCount === 0) maxCount = 1; // prevent div by zero
+
+        const today = new Date();
+        
+        days.forEach((count, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            
+            if (count > 0) {
+                // Opacity scales from 0.2 to 1.0 based on count
+                const opacity = 0.2 + (0.8 * (count / maxCount));
+                cell.style.backgroundColor = `rgba(139, 92, 246, ${opacity})`;
+            }
+
+            // Calculate past date
+            const d = new Date(today);
+            d.setDate(today.getDate() - (363 - i));
+            const dateStr = d.toISOString().split('T')[0];
+            
+            cell.setAttribute('data-tooltip', `${count} contributions on ${dateStr}`);
+            grid.appendChild(cell);
+        });
+    }
+
+    function renderRepos(repos, sortType) {
+        const list = document.getElementById('repo-list');
+        list.innerHTML = '';
+
+        let filtered = repos.filter(r => !r.fork);
+        
+        if (sortType === 'stars') filtered.sort((a,b) => b.stargazers_count - a.stargazers_count);
+        else if (sortType === 'forks') filtered.sort((a,b) => b.forks_count - a.forks_count);
+        else if (sortType === 'recent') filtered.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+        const toShow = showingAllRepos ? filtered : filtered.slice(0, 5);
+
+        if (toShow.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-muted)">No public repositories found.</p>';
+            return;
+        }
+
+        toShow.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'glass repo-card';
+            
+            const langColor = r.language ? (LANG_COLORS[r.language] || '#888') : 'transparent';
+            const langDot = r.language ? `<div class="lang-dot" style="background:${langColor}; display:inline-block; margin-right:4px;"></div>${r.language}` : '';
+            
+            const desc = r.description || 'No description provided.';
+            const date = new Date(r.updated_at).toLocaleDateString();
+
+            let topicsHtml = '';
+            if (r.topics && r.topics.length > 0) {
+                topicsHtml = `<div class="repo-topics">${r.topics.map(t => `<span class="topic-tag">${t}</span>`).join('')}</div>`;
+            }
+
+            card.innerHTML = `
+                <div class="repo-top">
+                    <a href="${r.html_url}" target="_blank" class="repo-name">${r.name}</a>
+                </div>
+                <div class="repo-desc">${desc}</div>
+                <div class="repo-meta">
+                    ${r.language ? `<span>${langDot}</span>` : ''}
+                    <span>⭐ ${r.stargazers_count}</span>
+                    <span>🍴 ${r.forks_count}</span>
+                    <span>⏱ ${date}</span>
+                </div>
+                ${topicsHtml}
+            `;
+
+            if (r.topics && r.topics.length > 0) {
+                card.onclick = (e) => {
+                    if(e.target.tagName !== 'A') card.classList.toggle('expanded');
+                };
+            }
+
+            list.appendChild(card);
+        });
+    }
+
+    // --- AI Integration ---
+    async function runAIAsync(username) {
+        document.getElementById('ai-content').classList.add('hidden');
+        document.getElementById('ai-error').classList.add('hidden');
+        document.getElementById('ai-loading').classList.remove('hidden');
+        document.getElementById('roast-box').classList.add('hidden');
+
+        try {
+            // Fetch top 3 READMEs
+            const topRepos = [...currentReposData].filter(r=>!r.fork).sort((a,b)=>b.stargazers_count - a.stargazers_count).slice(0,3);
+            
+            let readmesText = "";
+            for (let i = 0; i < topRepos.length; i++) {
+                try {
+                    const readmeHeaders = { 'Accept': 'application/vnd.github.v3.raw', 'X-GitHub-Api-Version': '2022-11-28' };
+                    if (GITHUB_PAT && GITHUB_PAT !== "") readmeHeaders['Authorization'] = `Bearer ${GITHUB_PAT}`;
+                    
+                    const rRes = await fetch(`https://api.github.com/repos/${username}/${topRepos[i].name}/readme`, {
+                        headers: readmeHeaders
+                    });
+                    if (rRes.ok) {
+                        const text = await rRes.text();
+                        readmesText += `\n\n--- Repo: ${topRepos[i].name} ---\n${text.substring(0, 1000)}`;
+                    }
+                } catch(e) { /* ignore single readme errors */ }
+            }
+
+            // Prepare Prompt
+            const u = currentUserData;
+            const promptData = {
+                name: u.name, bio: u.bio, repos: u.public_repos, followers: u.followers, 
+                topRepos: topRepos.map(r => ({name: r.name, desc: r.description, lang: r.language})),
+                readmes: readmesText,
+                roastRequested: isRoastMode
+            };
+
+            const prompt = `
+You are an expert tech recruiter and principal engineer analyzing a GitHub profile.
+Analyze the following developer profile data:
+${JSON.stringify(promptData, null, 2)}
+
+Return a strict JSON object (NO markdown formatting around it, just raw JSON) matching EXACTLY this structure:
+{
+  "summary": "2-sentence professional executive summary.",
+  "stack": ["Tech1", "Tech2", "Tech3", "Tech4", "Tech5"],
+  "careerPath": ["Path 1 suggestion", "Path 2 suggestion", "Path 3 suggestion"],
+  "audit": {
+    "missing": ["Missing profile element 1", "Missing element 2"],
+    "suggestions": ["Optimization tip 1", "Optimization tip 2", "Optimization tip 3"]
+  },
+  "projectSummaries": [
+    { "name": "Repo1", "summary": "Short 1 sentence summary.", "tools": ["Tool1", "Tool2"] },
+    { "name": "Repo2", "summary": "Short 1 sentence summary.", "tools": ["Tool1"] },
+    { "name": "Repo3", "summary": "Short 1 sentence summary.", "tools": ["Tool1", "Tool3"] }
+  ]
+  ${isRoastMode ? ',"roast": "A harsh, sarcastic, funny 2-sentence roast of their code, bio, or lack of followers."' : ''}
+}
+`;
+
+            let data = null;
+            const proxyUrl = `https://my-api-proxy-git.vercel.app?prompt=${encodeURIComponent(prompt)}`;
+
+            const res = await fetch(proxyUrl);
+
+            if (!res.ok) {
+                throw new Error('Proxy error');
+            }
+            
+            data = await res.json();
+            
+            let textRaw = "";
+            // Depending on how your proxy is structured, it might return the standard Gemini object
+            // or a simplified text response. This handles both!
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                textRaw = data.candidates[0].content.parts[0].text;
+            } else if (data.text) {
+                textRaw = data.text;
+            } else {
+                textRaw = JSON.stringify(data);
+            }
+            
+            // Cleanup just in case Gemini adds markdown even with mimetype
+            const cleanedText = textRaw.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const aiData = JSON.parse(cleanedText);
+
+            renderAIData(aiData);
+
+        } catch (err) {
+            console.error("AI Error:", err);
+            const errEl = document.getElementById('ai-error');
+            errEl.textContent = "AI is currently unavailable";
+            errEl.classList.remove('hidden');
+        } finally {
+            document.getElementById('ai-loading').classList.add('hidden');
+        }
+    }
+
+    function renderAIData(ai) {
+        document.getElementById('ai-content').classList.remove('hidden');
+        
+        document.getElementById('ai-summary').textContent = ai.summary || '';
+        
+        const stackCont = document.getElementById('ai-stack');
+        stackCont.innerHTML = (ai.stack || []).map(t => `<span class="chip">${t}</span>`).join('');
+
+        const careerCont = document.getElementById('ai-career');
+        careerCont.innerHTML = (ai.careerPath || []).map(c => `<li>${c}</li>`).join('');
+
+        const missingCont = document.getElementById('audit-missing');
+        missingCont.innerHTML = (ai.audit?.missing || []).map(m => `<span class="chip">${m}</span>`).join('');
+        
+        const tipsCont = document.getElementById('audit-tips');
+        tipsCont.innerHTML = (ai.audit?.suggestions || []).map(s => `<li>${s}</li>`).join('');
+
+        const projCont = document.getElementById('ai-projects');
+        projCont.innerHTML = (ai.projectSummaries || []).map(p => `
+            <div class="project-card">
+                <h4>${p.name}</h4>
+                <p>${p.summary}</p>
+                <div class="chip-container">${(p.tools||[]).map(t=>`<span class="chip" style="font-size:0.7rem; padding: 2px 8px;">${t}</span>`).join('')}</div>
+            </div>
+        `).join('');
+
+        if (isRoastMode && ai.roast) {
+            document.getElementById('roast-box').classList.remove('hidden');
+            document.getElementById('ai-roast').textContent = ai.roast;
+        }
+    }
+
+    // --- Compare Mode ---
+    async function handleCompare(e) {
+        e.preventDefault();
+        const input2 = document.getElementById('compare-input').value.trim();
+        const user2Name = extractUsername(input2);
+        if (!user2Name || !currentUserData) return;
+
+        document.getElementById('compare-error').classList.add('hidden');
+        document.getElementById('compare-results').classList.add('hidden');
+        document.getElementById('compare-loading').classList.remove('hidden');
+
+        try {
+            const headers = { 
+                'Accept': 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            };
+            if (GITHUB_PAT && GITHUB_PAT !== "") {
+                headers['Authorization'] = `Bearer ${GITHUB_PAT}`;
+            }
+
+            const [user2Res, repos2Res] = await Promise.all([
+                fetch(`https://api.github.com/users/${user2Name}`, { headers }),
+                fetch(`https://api.github.com/users/${user2Name}/repos?per_page=100`, { headers })
+            ]);
+
+            const userRateErr = checkRateLimit(user2Res);
+            if (userRateErr) throw new Error(userRateErr);
+            if (!user2Res.ok) throw new Error("Competitor not found.");
+
+            const repoRateErr = checkRateLimit(repos2Res);
+            if (repoRateErr) throw new Error(repoRateErr);
+            if (!repos2Res.ok) throw new Error(`Repos API Error: ${repos2Res.status}`);
+            
+            const user2 = await user2Res.json();
+            const repos2 = await repos2Res.json();
+
+            let stars2 = 0, forks2 = 0;
+            repos2.forEach(r => { if(!r.fork){ stars2+=r.stargazers_count; forks2+=r.forks_count; }});
+            
+            const score2 = Math.min(1000, Math.floor(stars2*10 + user2.followers*5 + user2.public_repos*2));
+            const streak2 = (user2.public_repos + user2.followers) % 20 + 2;
+
+            const m1 = {
+                name: currentUserData.login,
+                avatar: currentUserData.avatar_url,
+                followers: currentUserData.followers,
+                repos: currentUserData.public_repos,
+                stars: currentUserData._derived.totalStars,
+                forks: currentUserData._derived.totalForks,
+                score: currentUserData._dossierScore,
+                streak: currentUserData._commitStreak
+            };
+
+            const m2 = {
+                name: user2.login,
+                avatar: user2.avatar_url,
+                followers: user2.followers,
+                repos: user2.public_repos,
+                stars: stars2,
+                forks: forks2,
+                score: score2,
+                streak: streak2
+            };
+
+            renderCompare(m1, m2);
+
+        } catch(err) {
+            const errEl = document.getElementById('compare-error');
+            errEl.textContent = err.message;
+            errEl.classList.remove('hidden');
+        } finally {
+            document.getElementById('compare-loading').classList.add('hidden');
+        }
+    }
+
+    function renderCompare(u1, u2) {
+        const grid = document.getElementById('compare-grid');
+        
+        function makeRow(label, v1, v2, suffix='') {
+            const w1 = v1 > v2 ? 'winner' : '';
+            const w2 = v2 > v1 ? 'winner' : '';
+            return { r1: `<div class="metric-row ${w1}"><span class="metric-label">${label}</span><span class="metric-val">${v1}${suffix} ${w1?'🏆':''}</span></div>`,
+                     r2: `<div class="metric-row ${w2}"><span class="metric-label">${label}</span><span class="metric-val">${v2}${suffix} ${w2?'🏆':''}</span></div>` };
+        }
+
+        const followers = makeRow('Followers', u1.followers, u2.followers);
+        const repos = makeRow('Public Repos', u1.repos, u2.repos);
+        const stars = makeRow('Stars', u1.stars, u2.stars);
+        const forks = makeRow('Forks', u1.forks, u2.forks);
+        const score = makeRow('Dossier Score', u1.score, u2.score);
+        const streak = makeRow('Commit Streak', u1.streak, u2.streak, 'd');
+
+        grid.innerHTML = `
+            <div class="glass compare-col">
+                <div class="compare-header">
+                    <img src="${u1.avatar}" class="compare-avatar">
+                    <h4>@${u1.name}</h4>
+                </div>
+                ${followers.r1} ${repos.r1} ${stars.r1} ${forks.r1} ${score.r1} ${streak.r1}
+            </div>
+            <div class="glass compare-col">
+                <div class="compare-header">
+                    <img src="${u2.avatar}" class="compare-avatar">
+                    <h4>@${u2.name}</h4>
+                </div>
+                ${followers.r2} ${repos.r2} ${stars.r2} ${forks.r2} ${score.r2} ${streak.r2}
+            </div>
+        `;
+
+        document.getElementById('compare-results').classList.remove('hidden');
+    }
+
+    // --- Export / Share ---
+    async function exportPNG() {
+        if (!currentUserData) return;
+        const btn = document.getElementById('btn-export');
+        const oldText = btn.innerHTML;
+        btn.textContent = "Capturing...";
+        
+        try {
+            const canvas = await html2canvas(document.getElementById('capture-area'), {
+                backgroundColor: getCssVar('--bg'),
+                scale: 2,
+                ignoreElements: (el) => el.hasAttribute('data-html2canvas-ignore') || el.id==='compare-section'
+            });
+            const link = document.createElement('a');
+            link.download = `dossier-${currentUserData.login}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch(e) {
+            alert("Export failed.");
+        } finally {
+            btn.innerHTML = oldText;
+        }
+    }
+
+    async function shareDossier() {
+        if (!currentUserData) return;
+        const text = `Check out my GitHub Dossier! Score: ${currentUserData._dossierScore} ⭐`;
+        const url = window.location.href;
+        
+        if (navigator.share) {
+            try { await navigator.share({ title: 'Dossier.ai', text: text, url: url }); }
+            catch(e){}
+        } else {
+            document.execCommand('copy'); 
+            // fallback generic clip
+            const el = document.createElement('textarea');
+            el.value = `${text} ${url}`;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("Copied to clipboard!");
+        }
+    }
+
+    function tweetScore() {
+        if (!currentUserData) return;
+        const text = `I just analyzed my GitHub profile on Dossier.ai!\n\n🧠 Dossier Score: ${currentUserData._dossierScore}\n🔥 Commit Streak: ${currentUserData._commitStreak} days\n\nFind yours here:`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+        window.open(url, '_blank');
+    }
+
+    // Boot
+    init();
+
+</script>
+</body>
+</html>
