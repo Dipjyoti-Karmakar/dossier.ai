@@ -1157,7 +1157,7 @@ Return a strict JSON object (NO markdown formatting around it, just raw JSON) ma
 `;
 
             let data = null;
-            const proxyUrl = `https://my-api-proxy-git.vercel.app/api/gemini?prompt=${encodeURIComponent(prompt)}`;
+            const proxyUrl = `https://my-api-proxy-git.vercel.app{encodeURIComponent(userPrompt)}`;
 
             const res = await fetch(proxyUrl);
 
