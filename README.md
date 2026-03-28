@@ -1,4 +1,4 @@
-# Dossier.ai — GitHub Profile Intelligence Dashboard
+# Dossier.ai - GitHub Profile Intelligence Dashboard
 
 > Turn any GitHub profile into a full developer intelligence report, powered by Google Gemini AI. No backend. No server. Just open it and go.
 
