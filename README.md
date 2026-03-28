@@ -161,7 +161,8 @@ No configuration needed. The app is fully static.
 
 ```
 dossair.ai/
-└── index.html        # The entire application. HTML + CSS + JS in one file.
+├── index.html        # The entire application. HTML + CSS + JS in one file.
+└── README.md         # Documentation and project overview.
 ```
 
 That is the whole project.
