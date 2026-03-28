@@ -11,7 +11,7 @@
 
 ## Live Demo
 
-**[View Dossier.ai on GitHub Pages](https://dipjyoti-karmakar.github.io/dossair.ai)**
+**[View Dossier.ai on GitHub Pages](https://dipjyoti-karmakar.github.io/dossier.ai)**
 
 ---
 
