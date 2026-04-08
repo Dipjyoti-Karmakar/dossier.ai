@@ -75,7 +75,7 @@ Click the Analyze button on any repository to open a detailed modal with:
 | Technology | Purpose |
 |---|---|
 | HTML5 / CSS3 / Vanilla JS | Core application, zero framework dependencies |
-| Google Gemini API (gemini-1.5-flash) | AI analysis, repo discovery, code critique |
+| Google Gemini API (gemini-2.5-flash with gemini-2.5-flash-lite fallback) | AI analysis, repo discovery, code critique |
 | GitHub REST API v3 | Profile data, repositories, events |
 | Chart.js v4.4.0 | All data visualizations |
 | html2canvas v1.4.1 | PNG export |
