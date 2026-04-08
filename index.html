@@ -2361,7 +2361,7 @@
                     <span style="font-size: 0.75rem; color: var(--text-muted); min-width: 55px;">🐙 GitHub</span>
                     <div class="input-wrapper">
                         <input type="password" id="gh-token-input"
-                            placeholder="GitHub PAT — optional, increases API limit to 5000/hr"
+                            placeholder="GitHub PAT - optional, increases API limit to 5000/hr"
                             style="flex: 1; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px; background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-main); outline: none;">
                         <button type="button" class="eye-toggle" data-target="gh-token-input" title="Toggle visibility">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2851,7 +2851,7 @@
     </footer>
 
     <script>
-        // --- API Key Helpers (BYOK — Bring Your Own Key) ---
+        // --- API Key Helpers (BYOK - Bring Your Own Key) ---
         function getGeminiKey() {
             const key = document.getElementById('gemini-key-input').value.trim();
             if (key) localStorage.setItem('dossier_gemini_key', key);
@@ -3078,7 +3078,7 @@
                 document.getElementById('compare-results').classList.add('hidden');
             });
 
-            // Audit modal — close on backdrop click
+            // Audit modal - close on backdrop click
             document.getElementById('audit-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'audit-modal') {
                     document.getElementById('audit-modal').classList.remove('active');
@@ -3491,7 +3491,7 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
 
                 const repoResults = await Promise.all(repoPromises);
                 repoResults.forEach(r => { if (r) validResults.push(r); });
-                // Step 3: Fallback — if fewer than 3, use GitHub Search API
+                // Step 3: Fallback - if fewer than 3, use GitHub Search API
                 if (validResults.length < 3 && aiResult.searchQuery) {
                     document.getElementById('loading-text').textContent = '🔍 Searching GitHub for more matches...';
                     try {
@@ -3504,7 +3504,7 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
                             const existingNames = new Set(validResults.map(r => r.full_name));
                             (searchData.items || []).forEach(item => {
                                 if (!existingNames.has(item.full_name) && validResults.length < 5) {
-                                    item._aiReason = 'Found via GitHub Search — matches your description.';
+                                    item._aiReason = 'Found via GitHub Search - matches your description.';
                                     validResults.push(item);
                                     existingNames.add(item.full_name);
                                 }
@@ -3541,7 +3541,7 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
             const queryEcho = document.getElementById('discover-query-echo');
 
             section.classList.remove('hidden');
-            queryEcho.textContent = `"${query}" — ${results.length} ${category} repos found`;
+            queryEcho.textContent = `"${query}" - ${results.length} ${category} repos found`;
             container.innerHTML = '';
 
             results.forEach((repo, idx) => {
@@ -4316,7 +4316,7 @@ ${fileContent.substring(0, 10000)}
             const isDark = htmlEl.getAttribute('data-theme') === 'dark';
             const textColor = isDark ? '#f8fafc' : '#0f172a';
 
-            // Doughnut chart — Engagement breakdown
+            // Doughnut chart - Engagement breakdown
             const dCtx = document.getElementById('repoDoughnutChart').getContext('2d');
             repoChartInstances.doughnut = new Chart(dCtx, {
                 type: 'doughnut',
@@ -4343,7 +4343,7 @@ ${fileContent.substring(0, 10000)}
                 }
             });
 
-            // Bar chart — Metrics overview
+            // Bar chart - Metrics overview
             const bCtx = document.getElementById('repoBarChart').getContext('2d');
             repoChartInstances.bar = new Chart(bCtx, {
                 type: 'bar',

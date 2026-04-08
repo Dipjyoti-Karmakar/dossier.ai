@@ -99,16 +99,23 @@ Dossier uses deterministic scoring rules so Compare, Share, and Tweet actions al
 ### 1. Clone or Download
 
 ```bash
-git clone https://github.com/Dipjyoti-Karmakar/dossair.ai.git
-cd dossair.ai
+git clone https://github.com/Dipjyoti-Karmakar/dossier.ai.git
+cd dossier.ai
 ```
 
-Or simply download the `index.html` file directly.
+Or simply download the project files directly.
 
 ### 2. Open in Browser
 
 ```bash
+# macOS
 open index.html
+
+# Linux
+xdg-open index.html
+
+# Windows (PowerShell or Command Prompt)
+start index.html
 ```
 
 No `npm install`. No build step. No server needed. Just open the file.
@@ -128,7 +135,7 @@ The free tier supports approximately 15 requests per minute, which is more than 
 Without a token, the GitHub API allows 60 requests per hour. With a token, this increases to 5,000 per hour.
 
 1. Go to GitHub Settings → Developer Settings → Personal Access Tokens
-2. Generate a token with `public_repo` and `read:user` scopes
+2. Generate a token for public API usage (no special scopes are required for this app)
 3. Paste it into the GitHub Token field in the app
 
 ---
@@ -152,7 +159,7 @@ If you are using a shared or public device, clear your browser's local storage a
 1. Fork or upload the repository to your GitHub account
 2. Go to your repository Settings → Pages
 3. Set the source branch to `main` and the folder to `/ (root)`
-4. GitHub Pages will publish it at `https://dipjyoti-karmakar.github.io/dossair.ai`
+4. GitHub Pages will publish it at `https://dipjyoti-karmakar.github.io/dossier.ai`
 
 No configuration needed. The app is fully static.
 
@@ -171,7 +178,7 @@ No configuration needed. The app is fully static.
 ## Project Structure
 
 ```
-dossair.ai/
+dossier.ai/
 ├── index.html        # The entire application. HTML + CSS + JS in one file.
 └── README.md         # Documentation and project overview.
 ```
