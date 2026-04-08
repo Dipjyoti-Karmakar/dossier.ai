@@ -38,11 +38,11 @@ Powered by Google Gemini, Dossier.ai reads your repositories, languages, stars, 
 ### Data Visualizations
 Five live charts rendered using Chart.js:
 
-- **Skills Radar Chart** — scores you across Frontend, Backend, DevOps, Data/AI, Mobile, and Open Source
-- **Language Breakdown Bar** — a colorful segmented bar covering 40+ programming languages with accurate color mapping
-- **Star and Fork Trend Line** — plots your top 10 repos across both metrics
-- **90-Day Activity Heatmap** — a 13-week grid showing your real GitHub activity intensity per day
-- **Live Activity Feed** — your last 15 public GitHub events with timestamps, event type icons, and direct links for push/PR repositories
+- **Skills Radar Chart** - scores you across Frontend, Backend, DevOps, Data/AI, Mobile, and Open Source
+- **Language Breakdown Bar** - a colorful segmented bar covering 40+ programming languages with accurate color mapping
+- **Star and Fork Trend Line** - plots your top 10 repos across both metrics
+- **90-Day Activity Heatmap** - a 13-week grid showing your real GitHub activity intensity per day
+- **Live Activity Feed** - your last 15 public GitHub events with timestamps, event type icons, and direct links for push/PR repositories
 
 ### Discover Mode
 Instead of searching for tools by exact name, describe what you need in plain English.
