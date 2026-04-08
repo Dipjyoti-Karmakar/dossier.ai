@@ -42,7 +42,7 @@ Five live charts rendered using Chart.js:
 - **Language Breakdown Bar** — a colorful segmented bar covering 40+ programming languages with accurate color mapping
 - **Star and Fork Trend Line** — plots your top 10 repos across both metrics
 - **90-Day Activity Heatmap** — a 13-week grid showing your real GitHub activity intensity per day
-- **Live Activity Feed** — your last 15 public GitHub events with timestamps and event type icons
+- **Live Activity Feed** — your last 15 public GitHub events with timestamps, event type icons, and direct links for push/PR repositories
 
 ### Discover Mode
 Instead of searching for tools by exact name, describe what you need in plain English.
@@ -52,7 +52,7 @@ Instead of searching for tools by exact name, describe what you need in plain En
 Gemini generates precise search terms, queries the GitHub Search API, and returns the best matching repositories along with an AI explanation of why each one fits your request. A fundamentally different way to explore open source.
 
 ### Developer Compare Mode
-Enter any second GitHub username and get an instant head-to-head comparison across six metrics: followers, public repos, total stars, total forks, Dossier Score, and commit streak. The winner on each metric gets highlighted with a trophy.
+Enter any second GitHub username and get an instant head-to-head comparison across six metrics: followers, public repos, total stars, total forks, Dossier Score, and Activity Score. Large values are displayed in compact readable notation (for example, 549.1k or 1.2M), and the winner on each metric gets highlighted with a trophy.
 
 ### Deep Repository Analysis
 Click the Analyze button on any repository to open a detailed modal with:
@@ -65,8 +65,19 @@ Click the Analyze button on any repository to open a detailed modal with:
 
 ### Export and Share
 - Export your entire dossier as a high-resolution PNG (2x scale) using html2canvas
+- Export is stabilized for deterministic capture timing to prevent blank PNG outputs during animation-heavy states
 - Share via the native Web Share API on mobile or copy to clipboard on desktop
 - Tweet your Dossier Score directly to X with a pre-composed message
+
+### Scoring Rules
+Dossier uses deterministic scoring rules so Compare, Share, and Tweet actions all use the same numbers.
+
+- Dossier Score = min(1000, floor(totalStars * 10 + followers * 5 + publicRepos * 2))
+- Activity Score = ((publicRepos + followers) % 20) + 2
+- totalStars excludes forked repositories
+- Metrics are computed during profile load and reused across the app
+- Activity Score is a cyclic engagement metric computed from profile stats, not a consecutive-day commit history value
+- If cached Dossier Score or Activity Score is missing, the app recalculates before sharing to avoid undefined output
 
 ---
 

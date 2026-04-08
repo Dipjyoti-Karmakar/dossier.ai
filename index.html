@@ -211,6 +211,49 @@
             display: none !important;
         }
 
+        /* Export stabilization mode for deterministic html2canvas output */
+        body.export-capture-mode * {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        body.export-capture-mode .glass,
+        body.export-capture-mode .glass:hover {
+            transform: none !important;
+            box-shadow: var(--shadow-sm) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        body.export-capture-mode #main-content {
+            opacity: 1 !important;
+            animation: none !important;
+        }
+
+        body.export-capture-mode .heatmap-cell,
+        body.export-capture-mode .heatmap-cell:hover,
+        body.export-capture-mode .activity-feed-item,
+        body.export-capture-mode .activity-feed-item:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        body.export-capture-mode .heatmap-cell:hover::after {
+            opacity: 0 !important;
+        }
+
+        body.export-capture-mode .heatmap-wrapper,
+        body.export-capture-mode .activity-feed {
+            overflow: visible !important;
+            max-height: none !important;
+            padding-right: 0 !important;
+        }
+
+        body.export-capture-mode .heatmap-wrapper::-webkit-scrollbar,
+        body.export-capture-mode .activity-feed::-webkit-scrollbar {
+            display: none !important;
+        }
+
         /* Header */
         header {
             display: flex;
@@ -585,10 +628,18 @@
 
         .profile-bio {
             color: var(--text-muted);
-            margin-bottom: 16px;
+            margin-bottom: 4px;
             max-width: 600px;
             line-height: 1.5;
             word-wrap: break-word;
+        }
+
+        .profile-joined {
+            color: var(--text-muted);
+            font-size: 0.86rem;
+            margin-bottom: 14px;
+            opacity: 0.9;
+            line-height: 1.3;
         }
 
         .profile-meta {
@@ -737,20 +788,73 @@
 
         /* Heatmap */
         .heatmap-card {
+            --heatmap-cell-size: 18px;
+            --heatmap-gap: 4px;
+            --heatmap-day-label-width: 32px;
+            --heatmap-axis-gap: 8px;
             padding: 1.5rem 1.5rem 1rem;
             overflow: hidden;
+            position: relative;
+        }
+
+        .heatmap-card::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 220px;
+            height: 220px;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(56, 211, 159, 0.14), transparent 70%);
+            filter: blur(6px);
         }
 
         .heatmap-card h3 {
             font-size: 1rem;
             font-weight: 700;
             color: var(--accent);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .heatmap-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        .heatmap-subtitle {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+            line-height: 1.4;
+        }
+
+        .heatmap-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 0.7rem;
+            margin-bottom: 0.15rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .heatmap-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-main);
+            background: rgba(56, 211, 159, 0.12);
+            border: 1px solid rgba(56, 211, 159, 0.32);
         }
 
         .heatmap-wrapper {
             overflow-x: auto;
-            overflow-y: hidden;
+            overflow-y: visible;
+            padding-top: 8px;
             padding-bottom: 8px;
         }
 
@@ -769,36 +873,37 @@
 
         .heatmap-container {
             display: flex;
-            gap: 6px;
+            gap: var(--heatmap-axis-gap);
             width: max-content;
             min-width: 100%;
             justify-content: center;
-            padding: 4px 0;
+            align-items: flex-start;
+            padding: 6px 0;
         }
 
         .heatmap-day-labels {
             display: flex;
             flex-direction: column;
             gap: 0;
-            padding-top: 0;
+            padding-top: 2px;
             flex-shrink: 0;
         }
 
         .heatmap-day-label {
-            height: 22px;
+            height: calc(var(--heatmap-cell-size) + var(--heatmap-gap));
             font-size: 11px;
             color: var(--text-muted);
             display: flex;
             align-items: center;
             opacity: 0.8;
-            width: 32px;
+            width: var(--heatmap-day-label-width);
             line-height: 1;
             font-weight: 500;
         }
 
         .heatmap-columns {
             display: flex;
-            gap: 4px;
+            gap: var(--heatmap-gap);
             flex: 1;
             justify-content: center;
         }
@@ -806,75 +911,157 @@
         .heatmap-week {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: var(--heatmap-gap);
         }
 
         .heatmap-cell {
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-            background: rgba(56, 211, 159, 0.08);
-            transition: all 0.2s cubic-bezier(.4, 0, .2, 1);
+            width: var(--heatmap-cell-size);
+            height: var(--heatmap-cell-size);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(56, 211, 159, 0.06);
+            transition: transform 0.18s cubic-bezier(.4, 0, .2, 1), box-shadow 0.2s cubic-bezier(.4, 0, .2, 1), background-color 0.2s ease;
             position: relative;
             cursor: crosshair;
+            animation: heatmap-cell-in 0.32s ease both;
+            animation-delay: var(--delay, 0ms);
+            transform-origin: center;
         }
 
         [data-theme="light"] .heatmap-cell {
+            border-color: rgba(15, 23, 42, 0.1);
             background: rgba(56, 211, 159, 0.1);
         }
 
+        .heatmap-cell[data-level="0"],
+        .heatmap-legend-cell[data-level="0"] {
+            background: rgba(56, 211, 159, 0.06);
+        }
+
+        [data-theme="light"] .heatmap-cell[data-level="0"],
+        [data-theme="light"] .heatmap-legend-cell[data-level="0"] {
+            background: rgba(56, 211, 159, 0.1);
+        }
+
+        .heatmap-cell[data-level="1"],
+        .heatmap-legend-cell[data-level="1"] {
+            background: #155c45;
+        }
+
+        .heatmap-cell[data-level="2"],
+        .heatmap-legend-cell[data-level="2"] {
+            background: #168063;
+        }
+
+        .heatmap-cell[data-level="3"],
+        .heatmap-legend-cell[data-level="3"] {
+            background: #1daa80;
+        }
+
+        .heatmap-cell[data-level="4"],
+        .heatmap-legend-cell[data-level="4"] {
+            background: #39d3a1;
+        }
+
+        [data-theme="light"] .heatmap-cell[data-level="1"],
+        [data-theme="light"] .heatmap-legend-cell[data-level="1"] {
+            background: #b5ebd6;
+        }
+
+        [data-theme="light"] .heatmap-cell[data-level="2"],
+        [data-theme="light"] .heatmap-legend-cell[data-level="2"] {
+            background: #87dec2;
+        }
+
+        [data-theme="light"] .heatmap-cell[data-level="3"],
+        [data-theme="light"] .heatmap-legend-cell[data-level="3"] {
+            background: #56ceab;
+        }
+
+        [data-theme="light"] .heatmap-cell[data-level="4"],
+        [data-theme="light"] .heatmap-legend-cell[data-level="4"] {
+            background: #1cbf94;
+        }
+
+        .heatmap-cell.today {
+            box-shadow: 0 0 0 1px var(--accent), 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .heatmap-cell.heatmap-cell-empty {
+            background: transparent;
+            border-color: transparent;
+            cursor: default;
+            pointer-events: none;
+            animation: none;
+        }
+
         .heatmap-cell:hover {
-            transform: scale(1.5);
+            transform: translateY(-1px) scale(1.22);
             z-index: 10;
-            box-shadow: 0 0 10px rgba(56, 211, 159, 0.6);
-            border-radius: 4px;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 18px rgba(0, 0, 0, 0.28);
         }
 
         .heatmap-cell[data-tooltip]::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: calc(100% + 6px);
+            bottom: calc(100% + 8px);
             left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
+            transform: translateX(-50%) translateY(3px);
+            background: rgba(15, 23, 42, 0.96);
             color: #fff;
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: 6px;
             font-size: 11px;
             white-space: nowrap;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.15s ease, transform 0.15s ease;
             line-height: 1.3;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            z-index: 40;
         }
 
         .heatmap-cell:hover::after {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         .heatmap-legend {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             margin-top: 14px;
             font-size: 11px;
             color: var(--text-muted);
             font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-legend-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .heatmap-legend-note {
+            margin-left: 8px;
+            font-size: 10px;
+            opacity: 0.8;
         }
 
         .heatmap-legend-cell {
-            width: 14px;
-            height: 14px;
+            width: var(--heatmap-cell-size);
+            height: calc(var(--heatmap-cell-size) - 2px);
             border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .heatmap-month-labels {
             display: flex;
-            gap: 4px;
-            padding-left: 38px;
-            margin-bottom: 4px;
+            gap: var(--heatmap-gap);
+            padding-left: calc(var(--heatmap-day-label-width) + var(--heatmap-axis-gap));
+            margin-bottom: 2px;
         }
 
         .heatmap-month-label {
@@ -883,6 +1070,147 @@
             opacity: 0.8;
             min-width: 18px;
             font-weight: 500;
+        }
+
+        .activity-feed {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 0.75rem;
+            padding-right: 4px;
+            flex: 1;
+            max-height: 300px;
+        }
+
+        .activity-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .activity-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .activity-feed::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 999px;
+        }
+
+        .activity-feed-empty {
+            padding: 14px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            background: var(--bg-glass);
+        }
+
+        .activity-feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--event-accent, var(--primary));
+            background: var(--bg-glass-hover);
+            animation: feed-item-in 0.25s ease both;
+            animation-delay: var(--feed-delay, 0ms);
+            transition: transform 0.2s cubic-bezier(.4, 0, .2, 1), box-shadow 0.2s cubic-bezier(.4, 0, .2, 1), border-color 0.2s;
+        }
+
+        .activity-feed-item:hover {
+            transform: translateX(4px);
+            border-color: var(--border-highlight);
+            box-shadow: var(--shadow-sm);
+        }
+
+        [data-theme="light"] .activity-feed-item {
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .activity-feed-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            background: var(--primary-glow);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .activity-feed-main {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .activity-feed-title {
+            color: var(--text-main);
+            font-size: 0.84rem;
+            line-height: 1.35;
+            margin-bottom: 4px;
+        }
+
+        .activity-feed-title a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .activity-feed-title a:hover {
+            text-decoration: underline;
+        }
+
+        .activity-feed-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .activity-feed-badge {
+            padding: 2px 7px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--bg-glass);
+            color: var(--text-main);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.15px;
+        }
+
+        .activity-feed-time {
+            opacity: 0.92;
+        }
+
+        @keyframes feed-item-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes heatmap-cell-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.86);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* AI Section */
@@ -1874,28 +2202,22 @@
                 width: 100%;
             }
 
-            .heatmap-cell {
-                width: 14px;
-                height: 14px;
-                border-radius: 3px;
+            .heatmap-card {
+                --heatmap-cell-size: 14px;
+                --heatmap-gap: 3px;
+                --heatmap-day-label-width: 28px;
+                --heatmap-axis-gap: 6px;
             }
 
             .heatmap-day-label {
-                height: 18px;
+                height: calc(var(--heatmap-cell-size) + var(--heatmap-gap));
                 font-size: 10px;
-                width: 28px;
+                width: var(--heatmap-day-label-width);
             }
 
-            .heatmap-week {
-                gap: 3px;
-            }
-
-            .heatmap-columns {
-                gap: 3px;
-            }
-
-            .heatmap-month-labels {
-                padding-left: 32px;
+            .heatmap-pill {
+                font-size: 0.66rem;
+                padding: 2px 7px;
             }
 
             .scroll-top-btn {
@@ -2143,11 +2465,12 @@
 
             <!-- Profile Header -->
             <div class="glass profile-card">
-                <img src="" alt="Avatar" class="profile-avatar" id="p-avatar">
+                <img src="" alt="Avatar" class="profile-avatar" id="p-avatar" crossorigin="anonymous" referrerpolicy="no-referrer">
                 <div class="profile-info">
                     <h2 class="profile-name" id="p-name">--</h2>
                     <a href="#" target="_blank" class="profile-login" id="p-login">@--</a>
                     <p class="profile-bio" id="p-bio">--</p>
+                    <p class="profile-joined hidden" id="p-joined"></p>
                     <div class="profile-meta" id="p-meta">
                         <!-- Meta items inserted here -->
                     </div>
@@ -2223,7 +2546,11 @@
             <!-- Heatmap and Activity -->
             <div class="charts-grid" style="margin-top: 1.25rem; gap: 1.25rem;">
                 <div class="glass heatmap-card" style="display: flex; flex-direction: column;">
-                    <h3 title="Authentic 90-Day GitHub Events">📅 90-Day Activity Heatmap</h3>
+                    <div class="heatmap-header">
+                        <h3 title="Authentic 90-Day GitHub Events">📅 90-Day Activity Heatmap</h3>
+                        <p id="heatmap-subtitle" class="heatmap-subtitle">Tracking the last 91 days of public GitHub events.</p>
+                    </div>
+                    <div class="heatmap-stats" id="heatmap-stats"></div>
                     <div class="heatmap-wrapper">
                         <div id="heatmap-month-labels" class="heatmap-month-labels"></div>
                         <div class="heatmap-container">
@@ -2235,8 +2562,7 @@
                 </div>
                 <div class="glass chart-card" style="display: flex; flex-direction: column; min-height: 280px;">
                     <h3>⚡ Real-Time Activity Feed</h3>
-                    <div id="activity-feed"
-                        style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 0.75rem; padding-right: 4px; flex: 1; max-height: 300px;">
+                    <div id="activity-feed" class="activity-feed">
                         <!-- Timeline entries injected here -->
                     </div>
 
@@ -2556,6 +2882,31 @@
             return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
         }
 
+        function calculateDossierScore(totalStars, followers, publicRepos) {
+            const stars = Number.isFinite(totalStars) ? totalStars : 0;
+            const safeFollowers = Number.isFinite(followers) ? followers : 0;
+            const safeRepos = Number.isFinite(publicRepos) ? publicRepos : 0;
+            return Math.min(1000, Math.floor(stars * 10 + safeFollowers * 5 + safeRepos * 2));
+        }
+
+        function calculateActivityScore(followers, publicRepos) {
+            const safeFollowers = Number.isFinite(followers) ? followers : 0;
+            const safeRepos = Number.isFinite(publicRepos) ? publicRepos : 0;
+            return (safeRepos + safeFollowers) % 20 + 2;
+        }
+
+        function resolveScoringMetrics(userData) {
+            if (!userData) return { score: 0, activityScore: 2 };
+            const totalStars = Number.isFinite(userData?._derived?.totalStars) ? userData._derived.totalStars : 0;
+            const score = Number.isFinite(userData._dossierScore)
+                ? userData._dossierScore
+                : calculateDossierScore(totalStars, userData.followers, userData.public_repos);
+            const activityScore = Number.isFinite(userData._activityScore)
+                ? userData._activityScore
+                : calculateActivityScore(userData.followers, userData.public_repos);
+            return { score, activityScore };
+        }
+
         async function callGeminiWithFallback(geminiKey, geminiBody, options = {}) {
             const models = options.models || GEMINI_MODELS;
             const retryDelaysSec = options.retryDelaysSec || [3, 6, 12];
@@ -2815,9 +3166,22 @@
         }
 
         function formatNumber(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
-            return num.toString();
+            const value = Number(num);
+            if (!Number.isFinite(value)) return '0';
+
+            const absValue = Math.abs(value);
+            const formatCompact = (divisor, suffix) => {
+                const scaled = value / divisor;
+                const rounded = Math.round(scaled * 10) / 10;
+                const display = Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1);
+                return `${display}${suffix}`;
+            };
+
+            if (absValue >= 1000000000) return formatCompact(1000000000, 'B');
+            if (absValue >= 1000000) return formatCompact(1000000, 'M');
+            if (absValue >= 1000) return formatCompact(1000, 'k');
+
+            return Number.isInteger(value) ? value.toString() : value.toFixed(1).replace(/\.0$/, '');
         }
 
         function extractUsername(input) {
@@ -3009,6 +3373,8 @@
                 });
 
                 currentUserData._derived = { totalStars, totalForks };
+                currentUserData._dossierScore = calculateDossierScore(totalStars, currentUserData.followers, currentUserData.public_repos);
+                currentUserData._activityScore = calculateActivityScore(currentUserData.followers, currentUserData.public_repos);
 
                 setTimeout(() => {
                     document.getElementById('loading-state').classList.add('hidden');
@@ -3224,17 +3590,25 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
             const d = u._derived;
 
             // Header
-            document.getElementById('p-avatar').src = u.avatar_url;
+            const avatarEl = document.getElementById('p-avatar');
+            avatarEl.crossOrigin = 'anonymous';
+            avatarEl.referrerPolicy = 'no-referrer';
+            avatarEl.src = u.avatar_url;
             document.getElementById('p-name').textContent = u.name || u.login;
             document.getElementById('p-login').textContent = `@${u.login}`;
             document.getElementById('p-login').href = u.html_url;
 
             let bio = u.bio || "No bio provided.";
+            document.getElementById('p-bio').textContent = bio;
+            const joinedEl = document.getElementById('p-joined');
             if (u.created_at) {
                 const year = new Date(u.created_at).getFullYear();
-                bio += ` Joined GitHub in ${year}.`;
+                joinedEl.textContent = `Joined GitHub in ${year}.`;
+                joinedEl.classList.remove('hidden');
+            } else {
+                joinedEl.textContent = '';
+                joinedEl.classList.add('hidden');
             }
-            document.getElementById('p-bio').textContent = bio;
 
             // Meta
             const metaCont = document.getElementById('p-meta');
@@ -3414,10 +3788,13 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
             const dayLabelsEl = document.getElementById('heatmap-day-labels');
             const monthLabelsEl = document.getElementById('heatmap-month-labels');
             const legendEl = document.getElementById('heatmap-legend');
+            const subtitleEl = document.getElementById('heatmap-subtitle');
+            const statsEl = document.getElementById('heatmap-stats');
             grid.innerHTML = '';
             dayLabelsEl.innerHTML = '';
             monthLabelsEl.innerHTML = '';
             legendEl.innerHTML = '';
+            if (statsEl) statsEl.innerHTML = '';
 
             const events = currentUserData._events || [];
 
@@ -3436,7 +3813,23 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
                 }
             });
 
-            let maxCount = Math.max(...daysData);
+            const totalEvents = daysData.reduce((sum, count) => sum + count, 0);
+            const activeDays = daysData.filter(count => count > 0).length;
+            const rawMaxCount = Math.max(...daysData);
+            const consistency = Math.round((activeDays / 91) * 100);
+
+            if (subtitleEl) {
+                subtitleEl.textContent = `${totalEvents} events in last 91 days | ${activeDays} active days`;
+            }
+            if (statsEl) {
+                statsEl.innerHTML = `
+                    <span class="heatmap-pill">Peak/day: ${rawMaxCount}</span>
+                    <span class="heatmap-pill">Quiet days: ${91 - activeDays}</span>
+                    <span class="heatmap-pill">Consistency: ${consistency}%</span>
+                `;
+            }
+
+            let maxCount = rawMaxCount;
             if (maxCount === 0) maxCount = 1;
 
             // Day labels (Mon, Wed, Fri aligned to 7-row grid)
@@ -3465,7 +3858,7 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
                 // Add empty cells for days before start
                 for (let d = 0; d < startDow; d++) {
                     const empty = document.createElement('div');
-                    empty.style.cssText = 'width:14px;height:14px;';
+                    empty.className = 'heatmap-cell heatmap-cell-empty';
                     weekCol.appendChild(empty);
                 }
                 for (let d = startDow; d < 7 && dayIndex < 91; d++) {
@@ -3507,30 +3900,25 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
             }
 
             // Color legend
-            const levels = [
-                { opacity: 0, label: 'Less' },
-                { opacity: 0.15 },
-                { opacity: 0.35 },
-                { opacity: 0.6 },
-                { opacity: 0.85 },
-                { opacity: 1, label: 'More' }
-            ];
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            legendEl.innerHTML = '<span style="margin-right:4px;">Less</span>';
-            levels.forEach(l => {
+            const quietLabel = document.createElement('span');
+            quietLabel.className = 'heatmap-legend-label';
+            quietLabel.textContent = 'Quiet';
+            legendEl.appendChild(quietLabel);
+            for (let level = 0; level <= 4; level++) {
                 const c = document.createElement('div');
                 c.className = 'heatmap-legend-cell';
-                if (l.opacity === 0) {
-                    c.style.background = isDark ? 'rgba(56, 211, 159, 0.08)' : 'rgba(56, 211, 159, 0.1)';
-                } else {
-                    // GitHub-style green gradient scale
-                    const colors = ['#0e4429', '#006d32', '#26a641', '#39d353'];
-                    const idx = Math.min(Math.floor(l.opacity * (colors.length - 0.01)), colors.length - 1);
-                    c.style.background = colors[idx];
-                }
+                c.setAttribute('data-level', String(level));
                 legendEl.appendChild(c);
-            });
-            legendEl.innerHTML += '<span style="margin-left:6px;">More</span>';
+            }
+            const activeLabel = document.createElement('span');
+            activeLabel.className = 'heatmap-legend-label';
+            activeLabel.textContent = 'Active';
+            legendEl.appendChild(activeLabel);
+
+            const legendNote = document.createElement('span');
+            legendNote.className = 'heatmap-legend-note';
+            legendNote.textContent = `Peak/day ${rawMaxCount}`;
+            legendEl.appendChild(legendNote);
 
             renderActivityFeed();
         }
@@ -3538,20 +3926,15 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
         function createHeatmapCell(count, maxCount, today, dayIndex) {
             const cell = document.createElement('div');
             cell.className = 'heatmap-cell';
-            if (count > 0) {
-                // GitHub-style green graduated colors
-                const ratio = count / maxCount;
-                let color;
-                if (ratio <= 0.25) color = '#0e4429';
-                else if (ratio <= 0.5) color = '#006d32';
-                else if (ratio <= 0.75) color = '#26a641';
-                else color = '#39d353';
-                cell.style.backgroundColor = color;
-            }
+            const level = count <= 0 ? 0 : Math.min(4, Math.max(1, Math.ceil((count / maxCount) * 4)));
+            cell.setAttribute('data-level', String(level));
+            cell.style.setProperty('--delay', `${Math.min(dayIndex * 7, 420)}ms`);
+            if (dayIndex === 90) cell.classList.add('today');
+
             const d = new Date(today);
             d.setDate(today.getDate() - (90 - dayIndex));
-            const dateStr = d.toISOString().split('T')[0];
-            cell.setAttribute('data-tooltip', `${count} event${count!==1?'s':''} on ${dateStr}`);
+            const dateLabel = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            cell.setAttribute('data-tooltip', `${dateLabel} | ${count} event${count !== 1 ? 's' : ''}`);
             return cell;
         }
 
@@ -3563,13 +3946,27 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
             }
         }
 
+        function formatRelativeTime(dateObj) {
+            const diffMs = Date.now() - dateObj.getTime();
+            const minute = 60 * 1000;
+            const hour = 60 * minute;
+            const day = 24 * hour;
+            if (diffMs < minute) return 'just now';
+            if (diffMs < hour) return `${Math.floor(diffMs / minute)}m ago`;
+            if (diffMs < day) return `${Math.floor(diffMs / hour)}h ago`;
+            return `${Math.floor(diffMs / day)}d ago`;
+        }
+
         function renderActivityFeed() {
             const feed = document.getElementById('activity-feed');
             feed.innerHTML = '';
             const events = (currentUserData._events || []).slice(0, 15);
 
             if (events.length === 0) {
-                feed.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No recent public activity found.</p>';
+                const emptyEl = document.createElement('div');
+                emptyEl.className = 'activity-feed-empty';
+                emptyEl.textContent = 'No recent public activity found.';
+                feed.appendChild(emptyEl);
                 return;
             }
 
@@ -3582,11 +3979,35 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
                 'CreateEvent': '#6366f1'
             };
 
-            events.forEach(ev => {
+            const getRepoLink = (fullName) => {
+                if (!fullName || typeof fullName !== 'string') return '';
+                const parts = fullName.split('/');
+                if (parts.length < 2) return '';
+                const owner = encodeURIComponent(parts[0]);
+                const repo = encodeURIComponent(parts.slice(1).join('/'));
+                return `https://github.com/${owner}/${repo}`;
+            };
+
+            const buildRepoAnchor = (fullName, href) => {
+                if (!href) return `<strong>${fullName || 'Unknown repo'}</strong>`;
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer">${fullName || 'Unknown repo'}</a>`;
+            };
+
+            events.forEach((ev, index) => {
                 let actionText = 'Did something';
                 let icon = '📌';
-                if (ev.type === 'PushEvent') { actionText = `Pushed to <strong>${ev.repo.name}</strong>`; icon = '🚀'; }
-                else if (ev.type === 'PullRequestEvent') { actionText = `${ev.payload.action} PR on <strong>${ev.repo.name}</strong>`; icon = '🔄'; }
+                const repoName = ev?.repo?.name || 'Unknown repo';
+                const repoLink = getRepoLink(repoName);
+                if (ev.type === 'PushEvent') {
+                    actionText = `Pushed to ${buildRepoAnchor(repoName, repoLink)}`;
+                    icon = '🚀';
+                }
+                else if (ev.type === 'PullRequestEvent') {
+                    const prLink = ev?.payload?.pull_request?.html_url || repoLink;
+                    const prAction = ev?.payload?.action || 'updated';
+                    actionText = `${prAction} PR on ${buildRepoAnchor(repoName, prLink)}`;
+                    icon = '🔄';
+                }
                 else if (ev.type === 'IssuesEvent') { actionText = `${ev.payload.action} issue in <strong>${ev.repo.name}</strong>`; icon = '🐛'; }
                 else if (ev.type === 'WatchEvent') { actionText = `Starred <strong>${ev.repo.name}</strong>`; icon = '⭐'; }
                 else if (ev.type === 'ForkEvent') { actionText = `Forked <strong>${ev.repo.name}</strong>`; icon = '🍴'; }
@@ -3594,14 +4015,25 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
 
                 const d = new Date(ev.created_at);
                 const timeStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const relativeTime = formatRelativeTime(d);
                 const accentColor = eventColors[ev.type] || 'var(--border)';
+                const eventBadge = ev.type.replace('Event', '') || 'Activity';
 
                 const item = document.createElement('div');
-                item.style.cssText = `padding: 10px 12px; background: var(--bg-glass-hover); border-radius: 10px; border: 1px solid var(--border); font-size: 0.83rem; border-left: 3px solid ${accentColor}; transition: transform 0.15s;`;
-                item.onmouseenter = () => item.style.transform = 'translateX(3px)';
-                item.onmouseleave = () => item.style.transform = '';
-                item.innerHTML = `<div style="margin-bottom: 3px;">${icon} <span style="color:var(--text-main);">${actionText}</span></div>
-                                  <div style="color:var(--text-muted); font-size: 0.72rem;">⏱ ${timeStr}</div>`;
+                item.className = 'activity-feed-item';
+                item.style.setProperty('--event-accent', accentColor);
+                item.style.setProperty('--feed-delay', `${index * 45}ms`);
+                item.innerHTML = `
+                    <div class="activity-feed-icon">${icon}</div>
+                    <div class="activity-feed-main">
+                        <div class="activity-feed-title">${actionText}</div>
+                        <div class="activity-feed-meta">
+                            <span class="activity-feed-badge">${eventBadge}</span>
+                            <span class="activity-feed-time">${timeStr}</span>
+                            <span class="activity-feed-time">${relativeTime}</span>
+                        </div>
+                    </div>
+                `;
                 feed.appendChild(item);
             });
         }
@@ -4356,8 +4788,9 @@ ${codeContext}
                 let stars2 = 0, forks2 = 0;
                 repos2.forEach(r => { if (!r.fork) { stars2 += r.stargazers_count; forks2 += r.forks_count; } });
 
-                const score2 = Math.min(1000, Math.floor(stars2 * 10 + user2.followers * 5 + user2.public_repos * 2));
-                const streak2 = (user2.public_repos + user2.followers) % 20 + 2;
+                const score2 = calculateDossierScore(stars2, user2.followers, user2.public_repos);
+                const activityScore2 = calculateActivityScore(user2.followers, user2.public_repos);
+                const scoreMetrics1 = resolveScoringMetrics(currentUserData);
 
                 const m1 = {
                     name: currentUserData.login,
@@ -4366,8 +4799,8 @@ ${codeContext}
                     repos: currentUserData.public_repos,
                     stars: currentUserData._derived.totalStars,
                     forks: currentUserData._derived.totalForks,
-                    score: currentUserData._dossierScore,
-                    streak: currentUserData._commitStreak
+                    score: scoreMetrics1.score,
+                    activityScore: scoreMetrics1.activityScore
                 };
 
                 const m2 = {
@@ -4378,7 +4811,7 @@ ${codeContext}
                     stars: stars2,
                     forks: forks2,
                     score: score2,
-                    streak: streak2
+                    activityScore: activityScore2
                 };
 
                 renderCompare(m1, m2);
@@ -4396,11 +4829,15 @@ ${codeContext}
             const grid = document.getElementById('compare-grid');
 
             function makeRow(label, v1, v2, suffix = '') {
-                const w1 = v1 > v2 ? 'winner' : '';
-                const w2 = v2 > v1 ? 'winner' : '';
+                const raw1 = Number.isFinite(v1) ? v1 : 0;
+                const raw2 = Number.isFinite(v2) ? v2 : 0;
+                const w1 = raw1 > raw2 ? 'winner' : '';
+                const w2 = raw2 > raw1 ? 'winner' : '';
+                const display1 = formatNumber(raw1);
+                const display2 = formatNumber(raw2);
                 return {
-                    r1: `<div class="metric-row ${w1}"><span class="metric-label">${label}</span><span class="metric-val">${v1}${suffix} ${w1 ? '🏆' : ''}</span></div>`,
-                    r2: `<div class="metric-row ${w2}"><span class="metric-label">${label}</span><span class="metric-val">${v2}${suffix} ${w2 ? '🏆' : ''}</span></div>`
+                    r1: `<div class="metric-row ${w1}"><span class="metric-label">${label}</span><span class="metric-val">${display1}${suffix} ${w1 ? '🏆' : ''}</span></div>`,
+                    r2: `<div class="metric-row ${w2}"><span class="metric-label">${label}</span><span class="metric-val">${display2}${suffix} ${w2 ? '🏆' : ''}</span></div>`
                 };
             }
 
@@ -4409,7 +4846,7 @@ ${codeContext}
             const stars = makeRow('Stars', u1.stars, u2.stars);
             const forks = makeRow('Forks', u1.forks, u2.forks);
             const score = makeRow('Dossier Score', u1.score, u2.score);
-            const streak = makeRow('Commit Streak', u1.streak, u2.streak, 'd');
+            const activityScore = makeRow('Activity Score', u1.activityScore, u2.activityScore);
 
             grid.innerHTML = `
             <div class="glass compare-col">
@@ -4417,18 +4854,223 @@ ${codeContext}
                     <img src="${u1.avatar}" class="compare-avatar">
                     <h4>@${u1.name}</h4>
                 </div>
-                ${followers.r1} ${repos.r1} ${stars.r1} ${forks.r1} ${score.r1} ${streak.r1}
+                ${followers.r1} ${repos.r1} ${stars.r1} ${forks.r1} ${score.r1} ${activityScore.r1}
             </div>
             <div class="glass compare-col">
                 <div class="compare-header">
                     <img src="${u2.avatar}" class="compare-avatar">
                     <h4>@${u2.name}</h4>
                 </div>
-                ${followers.r2} ${repos.r2} ${stars.r2} ${forks.r2} ${score.r2} ${streak.r2}
+                ${followers.r2} ${repos.r2} ${stars.r2} ${forks.r2} ${score.r2} ${activityScore.r2}
             </div>
         `;
 
             document.getElementById('compare-results').classList.remove('hidden');
+        }
+
+        function waitForNextPaint(frames = 1) {
+            return new Promise(resolve => {
+                const tick = (remaining) => {
+                    if (remaining <= 0) {
+                        resolve();
+                        return;
+                    }
+                    requestAnimationFrame(() => tick(remaining - 1));
+                };
+                tick(Math.max(1, frames));
+            });
+        }
+
+        function waitForImageReady(img, timeoutMs = 3500) {
+            return new Promise((resolve) => {
+                if (!img || !img.src) {
+                    resolve({ ok: false, reason: 'missing-src', img });
+                    return;
+                }
+
+                let settled = false;
+                let timer = null;
+
+                const cleanup = () => {
+                    if (timer) clearTimeout(timer);
+                    img.removeEventListener('load', onLoad);
+                    img.removeEventListener('error', onError);
+                };
+
+                const finish = (ok, reason = '') => {
+                    if (settled) return;
+                    settled = true;
+                    cleanup();
+                    resolve({ ok, reason, img });
+                };
+
+                const onLoad = () => {
+                    if (typeof img.decode === 'function') {
+                        img.decode().then(() => finish(true)).catch(() => finish(true, 'decode-failed'));
+                    } else {
+                        finish(true);
+                    }
+                };
+
+                const onError = () => finish(false, 'load-error');
+
+                timer = setTimeout(() => finish(false, 'timeout'), timeoutMs);
+
+                if (img.complete) {
+                    if (img.naturalWidth > 0) {
+                        onLoad();
+                    } else {
+                        onError();
+                    }
+                    return;
+                }
+
+                img.addEventListener('load', onLoad);
+                img.addEventListener('error', onError);
+            });
+        }
+
+        async function ensureCaptureImagesReady(rootEl) {
+            const images = Array.from(rootEl.querySelectorAll('img')).filter(img => !!img.src);
+
+            images.forEach(img => {
+                try {
+                    const parsed = new URL(img.currentSrc || img.src, window.location.href);
+                    if (parsed.origin !== window.location.origin && img.crossOrigin !== 'anonymous') {
+                        img.crossOrigin = 'anonymous';
+                    }
+                } catch (_) {
+                    // Ignore malformed src values.
+                }
+            });
+
+            return Promise.all(images.map(img => waitForImageReady(img)));
+        }
+
+        function prepareExportSnapshot(captureArea) {
+            const snapshot = {
+                bodyHadExportClass: document.body.classList.contains('export-capture-mode'),
+                windowScrollX: window.scrollX,
+                windowScrollY: window.scrollY,
+                captureArea,
+                captureOpacity: captureArea.style.opacity,
+                captureAnimation: captureArea.style.animation,
+                heatmapDelays: [],
+                feedDelays: [],
+                scrollables: []
+            };
+
+            const heatmapCells = Array.from(captureArea.querySelectorAll('.heatmap-cell'));
+            heatmapCells.forEach(cell => {
+                snapshot.heatmapDelays.push({ el: cell, value: cell.style.getPropertyValue('--delay') });
+                cell.style.setProperty('--delay', '0ms');
+            });
+
+            const feedItems = Array.from(captureArea.querySelectorAll('.activity-feed-item'));
+            feedItems.forEach(item => {
+                snapshot.feedDelays.push({ el: item, value: item.style.getPropertyValue('--feed-delay') });
+                item.style.setProperty('--feed-delay', '0ms');
+            });
+
+            const scrollables = Array.from(captureArea.querySelectorAll('.heatmap-wrapper, .activity-feed'));
+            scrollables.forEach(el => {
+                snapshot.scrollables.push({ el, left: el.scrollLeft, top: el.scrollTop });
+                el.scrollLeft = 0;
+                el.scrollTop = 0;
+            });
+
+            captureArea.style.opacity = '1';
+            captureArea.style.animation = 'none';
+
+            if (!snapshot.bodyHadExportClass) {
+                document.body.classList.add('export-capture-mode');
+            }
+
+            window.scrollTo(0, 0);
+            return snapshot;
+        }
+
+        function restoreExportSnapshot(snapshot) {
+            if (!snapshot) return;
+
+            snapshot.heatmapDelays.forEach(({ el, value }) => {
+                if (!el || !el.isConnected) return;
+                if (value) el.style.setProperty('--delay', value);
+                else el.style.removeProperty('--delay');
+            });
+
+            snapshot.feedDelays.forEach(({ el, value }) => {
+                if (!el || !el.isConnected) return;
+                if (value) el.style.setProperty('--feed-delay', value);
+                else el.style.removeProperty('--feed-delay');
+            });
+
+            snapshot.scrollables.forEach(({ el, left, top }) => {
+                if (!el || !el.isConnected) return;
+                el.scrollLeft = left;
+                el.scrollTop = top;
+            });
+
+            if (snapshot.captureArea && snapshot.captureArea.isConnected) {
+                if (snapshot.captureOpacity) snapshot.captureArea.style.opacity = snapshot.captureOpacity;
+                else snapshot.captureArea.style.removeProperty('opacity');
+
+                if (snapshot.captureAnimation) snapshot.captureArea.style.animation = snapshot.captureAnimation;
+                else snapshot.captureArea.style.removeProperty('animation');
+            }
+
+            if (!snapshot.bodyHadExportClass) {
+                document.body.classList.remove('export-capture-mode');
+            }
+
+            window.scrollTo(snapshot.windowScrollX, snapshot.windowScrollY);
+        }
+
+        function stabilizeVisibleChartsForExport() {
+            const charts = [chartInstances.radar, chartInstances.area];
+            charts.forEach(chart => {
+                if (!chart) return;
+                try {
+                    if (typeof chart.resize === 'function') chart.resize();
+                    if (typeof chart.update === 'function') chart.update('none');
+                } catch (_) {
+                    // Ignore chart stabilization failures and proceed with capture.
+                }
+            });
+        }
+
+        function isCanvasLikelyBlank(canvas) {
+            if (!canvas || canvas.width === 0 || canvas.height === 0) return true;
+
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (!ctx) return false;
+
+            const cols = 8;
+            const rows = 8;
+            let firstSample = null;
+
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    const px = Math.floor((canvas.width - 1) * (x / (cols - 1)));
+                    const py = Math.floor((canvas.height - 1) * (y / (rows - 1)));
+                    let d;
+                    try {
+                        d = ctx.getImageData(px, py, 1, 1).data;
+                    } catch (_) {
+                        // If pixel reads are restricted, skip blank detection and trust the capture.
+                        return false;
+                    }
+                    const sample = `${d[0]},${d[1]},${d[2]},${d[3]}`;
+
+                    if (firstSample === null) {
+                        firstSample = sample;
+                    } else if (sample !== firstSample) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         // --- Export / Share ---
@@ -4437,27 +5079,86 @@ ${codeContext}
             const btn = document.getElementById('btn-export');
             const oldText = btn.innerHTML;
             btn.textContent = "Capturing...";
+            btn.disabled = true;
+
+            const captureArea = document.getElementById('main-content');
+            let exportSnapshot = null;
 
             try {
-                const canvas = await html2canvas(document.getElementById('capture-area'), {
-                    backgroundColor: getCssVar('--bg'),
+                if (!captureArea) throw new Error('Capture area not found.');
+                if (captureArea.classList.contains('hidden')) {
+                    throw new Error('Analysis is not visible yet. Please run analysis first.');
+                }
+
+                exportSnapshot = prepareExportSnapshot(captureArea);
+                stabilizeVisibleChartsForExport();
+
+                const fontReadyPromise = document.fonts && document.fonts.ready
+                    ? document.fonts.ready.catch(() => { })
+                    : Promise.resolve();
+                const imageResultsPromise = ensureCaptureImagesReady(captureArea);
+
+                await Promise.all([fontReadyPromise, waitForNextPaint(3)]);
+                const imageResults = await imageResultsPromise;
+                const avatarLoadState = imageResults.find(r => r.img && r.img.id === 'p-avatar');
+
+                if (avatarLoadState && !avatarLoadState.ok) {
+                    throw new Error('Profile image is not ready yet. Please wait a moment and retry.');
+                }
+
+                await waitForNextPaint(2);
+
+                const canvas = await html2canvas(captureArea, {
+                    backgroundColor: getCssVar('--bg') || '#0a0f1e',
                     scale: 2,
-                    ignoreElements: (el) => el.hasAttribute('data-html2canvas-ignore') || el.id === 'compare-section'
+                    useCORS: true,
+                    allowTaint: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    logging: false,
+                    ignoreElements: (el) => el.hasAttribute('data-html2canvas-ignore') || el.id === 'compare-section',
+                    onclone: (clonedDoc) => {
+                        const clonedMain = clonedDoc.getElementById('main-content');
+                        if (clonedMain) {
+                            clonedMain.style.opacity = '1';
+                            clonedMain.style.animation = 'none';
+                        }
+                    }
                 });
+
+                if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                    throw new Error('Export capture returned an empty canvas.');
+                }
+
+                if (isCanvasLikelyBlank(canvas)) {
+                    throw new Error('Export image appears blank. Wait for content to fully render, then retry.');
+                }
+
                 const link = document.createElement('a');
                 link.download = `dossier-${currentUserData.login}.png`;
-                link.href = canvas.toDataURL('image/png');
+                const pngDataUrl = canvas.toDataURL('image/png');
+                if (!pngDataUrl || pngDataUrl.length < 2000) {
+                    throw new Error('Export image data is incomplete. Please retry.');
+                }
+                link.href = pngDataUrl;
                 link.click();
             } catch (e) {
-                alert("Export failed.");
+                console.error('Export failed:', e);
+                const msg = e && e.message
+                    ? `Export failed: ${e.message}`
+                    : 'Export failed. Please retry after the profile fully loads.';
+                alert(msg);
             } finally {
+                restoreExportSnapshot(exportSnapshot);
+                btn.disabled = false;
                 btn.innerHTML = oldText;
             }
         }
 
         async function shareDossier() {
             if (!currentUserData) return;
-            const text = `Check out my GitHub Dossier! Score: ${currentUserData._dossierScore} ⭐`;
+            const scoreMetrics = resolveScoringMetrics(currentUserData);
+            const text = `Check out my GitHub Dossier! Score: ${scoreMetrics.score} ⭐`;
             const url = window.location.href;
 
             if (navigator.share) {
@@ -4489,7 +5190,9 @@ ${codeContext}
 
         function tweetScore() {
             if (!currentUserData) return;
-            const text = `I just analyzed my GitHub profile on Dossier.ai!\n\n🧠 Dossier Score: ${currentUserData._dossierScore}\n🔥 Commit Streak: ${currentUserData._commitStreak} days\n\nFind yours here:`;
+            const scoreMetrics = resolveScoringMetrics(currentUserData);
+            const profileLabel = currentUserData.login ? `@${currentUserData.login}` : 'Unknown profile';
+            const text = `GitHub profile snapshot via Dossier.ai\n\n👤 Profile: ${profileLabel}\n🧠 Dossier Score: ${scoreMetrics.score}\n⚡ Activity Score: ${scoreMetrics.activityScore}\n\nView report:`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
             window.open(url, '_blank');
         }
