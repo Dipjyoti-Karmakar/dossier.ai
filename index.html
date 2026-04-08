@@ -11,31 +11,54 @@
     <style>
         :root {
             /* Dark Theme Defaults */
-            --bg: #0f172a;
-            --bg-glass: rgba(30, 41, 59, 0.65);
-            --bg-glass-hover: rgba(45, 60, 85, 0.8);
-            --text-main: #f8fafc;
+            --bg: #0a0f1e;
+            --bg-surface: #111827;
+            --bg-glass: rgba(17, 24, 39, 0.72);
+            --bg-glass-hover: rgba(30, 41, 59, 0.85);
+            --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
             --border-highlight: rgba(139, 92, 246, 0.4);
             --primary: #8b5cf6;
-            --primary-glow: rgba(139, 92, 246, 0.2);
-            --secondary: #3b82f6;
+            --primary-glow: rgba(139, 92, 246, 0.15);
+            --secondary: #6366f1;
+            --accent: #a78bfa;
             --error: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+            --gradient-accent: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+            --gradient-card: linear-gradient(145deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.6));
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.35);
+            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
         }
 
         [data-theme="light"] {
-            --bg: #f8fafc;
-            --bg-glass: rgba(255, 255, 255, 0.7);
+            --bg: #f0f2f5;
+            --bg-surface: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.75);
             --bg-glass-hover: rgba(255, 255, 255, 0.95);
             --text-main: #0f172a;
             --text-muted: #475569;
-            --border: rgba(0, 0, 0, 0.1);
-            --border-highlight: rgba(139, 92, 246, 0.4);
+            --border: rgba(0, 0, 0, 0.08);
+            --border-highlight: rgba(139, 92, 246, 0.35);
             --primary: #7c3aed;
-            --primary-glow: rgba(124, 58, 237, 0.15);
+            --primary-glow: rgba(124, 58, 237, 0.1);
+            --secondary: #4f46e5;
+            --accent: #7c3aed;
+            --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #3b82f6 100%);
+            --gradient-accent: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+            --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.7));
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 30px rgba(124, 58, 237, 0.1);
         }
 
         * {
@@ -49,8 +72,10 @@
             background: var(--bg);
             color: var(--text-main);
             min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background 0.4s cubic-bezier(.4, 0, .2, 1), color 0.4s cubic-bezier(.4, 0, .2, 1);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* Animated Background Orbs */
@@ -120,22 +145,24 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2rem 2.5rem;
         }
 
         /* Utilities */
         .glass {
-            background: var(--bg-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-lg);
+            transition: all 0.35s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: var(--shadow-sm);
         }
 
         .glass:hover {
             border-color: var(--border-highlight);
-            box-shadow: 0 8px 32px var(--primary-glow);
+            box-shadow: var(--shadow-md), var(--shadow-glow);
+            transform: translateY(-1px);
         }
 
         .flex {
@@ -189,32 +216,53 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .logo svg {
-            width: 32px;
-            height: 32px;
-            fill: currentColor;
+            width: 36px;
+            height: 36px;
+            fill: url(#logoGrad);
+            filter: drop-shadow(0 2px 6px rgba(139, 92, 246, 0.3));
         }
 
         .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.6rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo p {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 500;
-            margin-top: -2px;
+            margin-top: -3px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
         .controls {
@@ -290,48 +338,56 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         .search-bar {
             width: 100%;
-            max-width: 600px;
+            max-width: 640px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             position: relative;
         }
 
         .search-bar input {
             flex: 1;
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 12px;
+            padding: 0.95rem 1.25rem 0.95rem 1.25rem;
+            font-size: 0.95rem;
+            border-radius: var(--radius-md);
             background: var(--bg-glass);
             border: 1px solid var(--border);
             color: var(--text-main);
             outline: none;
-            transition: 0.2s;
+            transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
         }
 
         .search-bar input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow);
+            box-shadow: 0 0 0 3px var(--primary-glow), var(--shadow-md);
         }
 
         .search-btn {
-            padding: 0 1.5rem;
-            background: var(--primary);
+            padding: 0 2rem;
+            background: var(--gradient-primary);
             color: #fff;
             border: none;
-            border-radius: 12px;
-            font-weight: 600;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
         }
 
         .search-btn:hover {
-            background: var(--secondary);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.45);
+            filter: brightness(1.1);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
         }
 
         /* Legend Tabs */
@@ -558,30 +614,49 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
         .stat-card {
             padding: 1.5rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 3px 3px 0 0;
         }
 
         .stat-icon {
             font-size: 1.5rem;
             margin-bottom: 8px;
+            opacity: 0.9;
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 4px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         /* Language Breakdown */
@@ -626,7 +701,7 @@
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
         .chart-card {
@@ -634,69 +709,180 @@
             height: 400px;
             position: relative;
             min-width: 0;
+            overflow: hidden;
+        }
+
+        .chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-accent);
         }
 
         .chart-card h3 {
             margin-bottom: 1rem;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         .chart-container {
             position: relative;
-            height: calc(100% - 2rem);
+            height: calc(100% - 2.5rem);
             width: 100%;
         }
 
         /* Heatmap */
         .heatmap-card {
-            padding: 1.5rem;
-            overflow-x: auto;
+            padding: 1.5rem 1.5rem 1rem;
+            overflow: hidden;
         }
 
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: repeat(52, 16px);
-            grid-template-rows: repeat(7, 16px);
-            gap: 4px;
+        .heatmap-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .heatmap-wrapper {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 8px;
+        }
+
+        .heatmap-wrapper::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .heatmap-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .heatmap-wrapper::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .heatmap-container {
+            display: flex;
+            gap: 6px;
             width: max-content;
-            margin: 1.5rem auto;
+            min-width: 100%;
+            justify-content: center;
+            padding: 4px 0;
+        }
+
+        .heatmap-day-labels {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding-top: 0;
+            flex-shrink: 0;
+        }
+
+        .heatmap-day-label {
+            height: 22px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
+            width: 32px;
+            line-height: 1;
+            font-weight: 500;
+        }
+
+        .heatmap-columns {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .heatmap-week {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .heatmap-cell {
-            width: 16px;
-            height: 16px;
-            border-radius: 2px;
-            background: rgba(139, 92, 246, 0.05);
-            transition: 0.2s;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            background: rgba(56, 211, 159, 0.08);
+            transition: all 0.2s cubic-bezier(.4, 0, .2, 1);
             position: relative;
+            cursor: crosshair;
+        }
+
+        [data-theme="light"] .heatmap-cell {
+            background: rgba(56, 211, 159, 0.1);
         }
 
         .heatmap-cell:hover {
-            transform: scale(1.4);
+            transform: scale(1.5);
             z-index: 10;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px rgba(56, 211, 159, 0.6);
+            border-radius: 4px;
         }
 
         .heatmap-cell[data-tooltip]::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 100%;
+            bottom: calc(100% + 6px);
             left: 50%;
             transform: translateX(-50%);
             background: #1e293b;
             color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             white-space: nowrap;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.2s;
-            margin-bottom: 5px;
+            transition: opacity 0.15s;
+            line-height: 1.3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .heatmap-cell:hover::after {
             opacity: 1;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 14px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .heatmap-legend-cell {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        .heatmap-month-labels {
+            display: flex;
+            gap: 4px;
+            padding-left: 38px;
+            margin-bottom: 4px;
+        }
+
+        .heatmap-month-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.8;
+            min-width: 18px;
+            font-weight: 500;
         }
 
         /* AI Section */
@@ -744,7 +930,9 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 1rem;
-            color: var(--primary);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1rem;
         }
 
         .chip-container {
@@ -783,8 +971,8 @@
         }
 
         .roast-card {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            border-color: rgba(239, 68, 68, 0.25);
         }
 
         .roast-card h3 {
@@ -794,8 +982,8 @@
         .roast-text {
             font-style: italic;
             color: var(--text-main);
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.05rem;
+            line-height: 1.7;
         }
 
         .projects-grid {
@@ -879,12 +1067,31 @@
         .repo-card {
             padding: 1.25rem;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            transition: transform 0.25s cubic-bezier(.4, 0, .2, 1), box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .repo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-accent);
+            border-radius: 4px 0 0 4px;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .repo-card:hover::before {
+            opacity: 1;
         }
 
         .repo-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px) translateX(2px);
+            box-shadow: var(--shadow-md), var(--shadow-glow);
         }
 
         .repo-top {
@@ -1115,15 +1322,15 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             opacity: 0;
             pointer-events: none;
-            transition: 0.3s;
+            transition: all 0.35s cubic-bezier(.4, 0, .2, 1);
         }
 
         .modal-overlay.active {
@@ -1136,23 +1343,35 @@
             max-width: 500px;
             padding: 2rem;
             position: relative;
-            transform: translateY(20px);
-            transition: 0.3s;
+            transform: translateY(30px) scale(0.96);
+            transition: all 0.35s cubic-bezier(.4, 0, .2, 1);
         }
 
         .modal-overlay.active .modal-content {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .close-modal {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: none;
-            border: none;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            transition: 0.2s;
+        }
+
+        .close-modal:hover {
+            background: var(--error);
+            color: #fff;
+            border-color: var(--error);
         }
 
         .audit-missing {
@@ -1241,16 +1460,28 @@
         /* Footer */
         .site-footer {
             text-align: center;
-            padding: 2rem 1rem;
-            margin-top: 2rem;
-            border-top: 1px solid var(--border);
+            padding: 2.5rem 1rem;
+            margin-top: 3rem;
+            position: relative;
             color: var(--text-muted);
             font-size: 0.8rem;
+        }
+
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background: var(--gradient-primary);
         }
 
         .site-footer a {
             color: var(--primary);
             text-decoration: none;
+            font-weight: 600;
         }
 
         .site-footer a:hover {
@@ -1643,15 +1874,28 @@
                 width: 100%;
             }
 
-            .heatmap-grid {
-                grid-template-columns: repeat(26, 13px);
-                grid-template-rows: repeat(14, 13px);
+            .heatmap-cell {
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+            }
+
+            .heatmap-day-label {
+                height: 18px;
+                font-size: 10px;
+                width: 28px;
+            }
+
+            .heatmap-week {
                 gap: 3px;
             }
 
-            .heatmap-cell {
-                width: 13px;
-                height: 13px;
+            .heatmap-columns {
+                gap: 3px;
+            }
+
+            .heatmap-month-labels {
+                padding-left: 32px;
             }
 
             .scroll-top-btn {
@@ -1713,16 +1957,26 @@
         <header>
             <div class="logo">
                 <svg viewBox="0 0 24 24">
-                    <path
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8b5cf6"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#3b82f6"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#logoGrad)"
                         d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
+
                 <div>
                     <h1>Dossier.ai</h1>
                     <p>GitHub Intelligence</p>
                 </div>
             </div>
             <div class="controls">
-                <div id="api-limit-badge" style="background: rgba(139, 92, 246, 0.1); border: 1px solid var(--border-highlight); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: var(--primary); display: none;" title="GitHub API Rate Limit">API: --/--</div>
+                <div id="api-limit-badge"
+                    style="background: rgba(139, 92, 246, 0.1); border: 1px solid var(--border-highlight); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: var(--primary); display: none;"
+                    title="GitHub API Rate Limit">API: --/--</div>
                 <label class="toggle-switch">
                     <input type="checkbox" id="roast-toggle" class="hidden">
                     <div class="toggle-track">
@@ -1815,30 +2069,41 @@
         </div>
 
         <!-- Onboarding Hero (Empty State) -->
-        <div id="onboarding-hero" class="glass" style="max-width: 800px; margin: 0 auto; padding: 3rem; text-align: center; border-radius: 24px; animation: fadeIn 0.8s ease;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
-            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-main);">Welcome to Dossier.ai</h2>
-            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
-                Transform any GitHub profile into a beautifully formatted, AI-powered intelligence dossier. We analyze code patterns, extract true contribution stats, and generate actionable insights in seconds.
+        <div id="onboarding-hero" class="glass"
+            style="max-width: 800px; margin: 0 auto; padding: 3rem; text-align: center; border-radius: 28px; animation: fadeIn 0.8s ease; overflow: hidden; position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-primary);"></div>
+            <div style="font-size: 3.5rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 12px rgba(139,92,246,0.3));">🚀</div>
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.75rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800;">Welcome to Dossier.ai</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Transform any GitHub profile into a beautifully formatted, AI-powered intelligence dossier. We analyze
+                code patterns, extract true contribution stats, and generate actionable insights in seconds.
             </p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; text-align: left; margin-bottom: 2rem;">
-                <div style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border);">
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; text-align: left; margin-bottom: 2rem;">
+                <div
+                    style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); border-top: 3px solid #8b5cf6; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
                     <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Real Mechanics</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">True language byte-counts and authentic 90-day activity tracking via GitHub Events.</p>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--accent); font-weight: 700;">Real Mechanics</h4>
+                    <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">True language byte-counts and authentic
+                        90-day activity tracking via GitHub Events.</p>
                 </div>
-                <div style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border);">
+                <div
+                    style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); border-top: 3px solid #6366f1; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
                     <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Agentic Logic</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Gemini parses raw repositories to critique code quality and deduce career archetypes.</p>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--accent); font-weight: 700;">Agentic Logic</h4>
+                    <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">Gemini parses raw repositories to critique
+                        code quality and deduce career archetypes.</p>
                 </div>
-                <div style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border);">
+                <div
+                    style="background: var(--bg-glass-hover); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); border-top: 3px solid #3b82f6; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
                     <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Discovery</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Search by concept to find the best open-source libraries instantly.</p>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--accent); font-weight: 700;">Discovery</h4>
+                    <p style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.5;">Search by concept to find the best
+                        open-source libraries instantly.</p>
                 </div>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">👆 Try searching for <strong>torvalds</strong> or <strong>gaearon</strong> to see it in action.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); opacity: 0.8;">👆 Try searching for <strong style="color: var(--accent);">torvalds</strong> or
+                <strong style="color: var(--accent);">gaearon</strong> to see it in action.</p>
         </div>
 
         <!-- Loading State (Skeleton) -->
@@ -1942,13 +2207,13 @@
             <!-- Charts -->
             <div class="charts-grid">
                 <div class="glass chart-card">
-                    <h3>Skill Radar</h3>
+                    <h3>🎯 Skill Radar</h3>
                     <div class="chart-container">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
                 <div class="glass chart-card">
-                    <h3>Recent Star Trends</h3>
+                    <h3>📈 Star Trends</h3>
                     <div class="chart-container">
                         <canvas id="areaChart"></canvas>
                     </div>
@@ -1956,16 +2221,25 @@
             </div>
 
             <!-- Heatmap and Activity -->
-            <div class="charts-grid" style="margin-top: 1.5rem; gap: 1.5rem;">
+            <div class="charts-grid" style="margin-top: 1.25rem; gap: 1.25rem;">
                 <div class="glass heatmap-card" style="display: flex; flex-direction: column;">
-                    <h3 style="margin-bottom: 0.5rem;" title="Authentic 90-Day GitHub Events">Authentic 90-Day Heatmap</h3>
-                    <div class="heatmap-grid" id="heatmap" style="margin-top: auto; margin-bottom: auto; grid-template-columns: repeat(13, 12px);"></div>
+                    <h3 title="Authentic 90-Day GitHub Events">📅 90-Day Activity Heatmap</h3>
+                    <div class="heatmap-wrapper">
+                        <div id="heatmap-month-labels" class="heatmap-month-labels"></div>
+                        <div class="heatmap-container">
+                            <div class="heatmap-day-labels" id="heatmap-day-labels"></div>
+                            <div class="heatmap-columns" id="heatmap"></div>
+                        </div>
+                    </div>
+                    <div class="heatmap-legend" id="heatmap-legend"></div>
                 </div>
-                <div class="glass chart-card" style="display: flex; flex-direction: column; min-height: 250px;">
-                    <h3>Real-Time Activity Feed</h3>
-                    <div id="activity-feed" style="overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 1rem; padding-right: 4px; max-height: 250px;">
+                <div class="glass chart-card" style="display: flex; flex-direction: column; min-height: 280px;">
+                    <h3>⚡ Real-Time Activity Feed</h3>
+                    <div id="activity-feed"
+                        style="overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 0.75rem; padding-right: 4px; flex: 1; max-height: 300px;">
                         <!-- Timeline entries injected here -->
                     </div>
+
                 </div>
             </div>
 
@@ -2179,7 +2453,9 @@
                     style="color: var(--text-muted); line-height: 1.6; font-size: 0.9rem; white-space: pre-line;"></p>
                 <p id="rm-readme-error" class="hidden"
                     style="color: var(--text-muted); font-style: italic; font-size: 0.85rem;"></p>
-                <button id="btn-analyze-code" class="sort-btn" style="margin-top: 1rem; width: 100%; padding: 10px; font-weight: 600; text-align: center;">Critique Code Quality 🤖</button>
+                <button id="btn-analyze-code" class="sort-btn"
+                    style="margin-top: 1rem; width: 100%; padding: 10px; font-weight: 600; text-align: center;">Critique
+                    Code Quality 🤖</button>
             </div>
 
             <!-- Metadata -->
@@ -2620,12 +2896,12 @@
                 const eventsRaw = eventsRes.ok ? await eventsRes.json() : [];
 
                 document.getElementById('loading-text').textContent = 'Fetching Top Repo Languages...';
-                
+
                 // Fetch top languages logic
-                const topRepos = [...currentReposData].filter(r => !r.fork).sort((a,b) => b.stargazers_count - a.stargazers_count).slice(0, 10);
+                const topRepos = [...currentReposData].filter(r => !r.fork).sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 10);
                 const langPromises = topRepos.map(r => fetch(r.languages_url, { headers }).then(res => res.ok ? res.json() : {}));
                 const langResults = await Promise.all(langPromises);
-                
+
                 let trueLangs = {};
                 langResults.forEach(langObj => {
                     for (const [lang, bytes] of Object.entries(langObj)) {
@@ -3083,57 +3359,176 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
 
         function renderHeatmap() {
             const grid = document.getElementById('heatmap');
+            const dayLabelsEl = document.getElementById('heatmap-day-labels');
+            const monthLabelsEl = document.getElementById('heatmap-month-labels');
+            const legendEl = document.getElementById('heatmap-legend');
             grid.innerHTML = '';
+            dayLabelsEl.innerHTML = '';
+            monthLabelsEl.innerHTML = '';
+            legendEl.innerHTML = '';
 
             const events = currentUserData._events || [];
-            
-            // Generate last 90 days array (13 weeks = 91 days)
+
+            // Generate last 91 days (13 weeks)
             const daysData = new Array(91).fill(0);
             const today = new Date();
-            today.setHours(0,0,0,0);
-            
+            today.setHours(0, 0, 0, 0);
+
             events.forEach(ev => {
                 const evDate = new Date(ev.created_at);
-                evDate.setHours(0,0,0,0);
+                evDate.setHours(0, 0, 0, 0);
                 const diffTime = Math.abs(today - evDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays < 91) {
-                    daysData[90 - diffDays]++; // 90 is today, 0 is 90 days ago
+                    daysData[90 - diffDays]++;
                 }
             });
 
             let maxCount = Math.max(...daysData);
             if (maxCount === 0) maxCount = 1;
 
-            daysData.forEach((count, i) => {
-                const cell = document.createElement('div');
-                cell.className = 'heatmap-cell';
-
-                if (count > 0) {
-                    const opacity = 0.3 + (0.7 * (count / maxCount));
-                    cell.style.backgroundColor = `rgba(139, 92, 246, ${opacity})`;
-                }
-
-                const d = new Date(today);
-                d.setDate(today.getDate() - (90 - i));
-                const dateStr = d.toISOString().split('T')[0];
-
-                cell.setAttribute('data-tooltip', `${count} actions on ${dateStr}`);
-                grid.appendChild(cell);
+            // Day labels (Mon, Wed, Fri aligned to 7-row grid)
+            const dayNames = ['Mon', '', 'Wed', '', 'Fri', '', ''];
+            dayNames.forEach(name => {
+                const label = document.createElement('div');
+                label.className = 'heatmap-day-label';
+                label.textContent = name;
+                dayLabelsEl.appendChild(label);
             });
-            
+
+            // Find start day of week for 90 days ago
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 90);
+            const startDow = (startDate.getDay() + 6) % 7; // Mon=0
+
+            // Build week columns
+            let dayIndex = 0;
+            let weekIndex = 0;
+            const monthsSeen = {};
+
+            // First partial week
+            if (startDow > 0) {
+                const weekCol = document.createElement('div');
+                weekCol.className = 'heatmap-week';
+                // Add empty cells for days before start
+                for (let d = 0; d < startDow; d++) {
+                    const empty = document.createElement('div');
+                    empty.style.cssText = 'width:14px;height:14px;';
+                    weekCol.appendChild(empty);
+                }
+                for (let d = startDow; d < 7 && dayIndex < 91; d++) {
+                    const cell = createHeatmapCell(daysData[dayIndex], maxCount, today, dayIndex);
+                    trackMonth(today, dayIndex, weekIndex, monthsSeen);
+                    weekCol.appendChild(cell);
+                    dayIndex++;
+                }
+                grid.appendChild(weekCol);
+                weekIndex++;
+            }
+
+            // Full weeks
+            while (dayIndex < 91) {
+                const weekCol = document.createElement('div');
+                weekCol.className = 'heatmap-week';
+                for (let d = 0; d < 7 && dayIndex < 91; d++) {
+                    const cell = createHeatmapCell(daysData[dayIndex], maxCount, today, dayIndex);
+                    if (d === 0) trackMonth(today, dayIndex, weekIndex, monthsSeen);
+                    weekCol.appendChild(cell);
+                    dayIndex++;
+                }
+                grid.appendChild(weekCol);
+                weekIndex++;
+            }
+
+            // Month labels
+            const totalWeeks = weekIndex;
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            let lastMonth = -1;
+            for (let w = 0; w < totalWeeks; w++) {
+                const label = document.createElement('span');
+                label.className = 'heatmap-month-label';
+                if (monthsSeen[w] !== undefined && monthsSeen[w] !== lastMonth) {
+                    label.textContent = monthNames[monthsSeen[w]];
+                    lastMonth = monthsSeen[w];
+                }
+                monthLabelsEl.appendChild(label);
+            }
+
+            // Color legend
+            const levels = [
+                { opacity: 0, label: 'Less' },
+                { opacity: 0.15 },
+                { opacity: 0.35 },
+                { opacity: 0.6 },
+                { opacity: 0.85 },
+                { opacity: 1, label: 'More' }
+            ];
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            legendEl.innerHTML = '<span style="margin-right:4px;">Less</span>';
+            levels.forEach(l => {
+                const c = document.createElement('div');
+                c.className = 'heatmap-legend-cell';
+                if (l.opacity === 0) {
+                    c.style.background = isDark ? 'rgba(56, 211, 159, 0.08)' : 'rgba(56, 211, 159, 0.1)';
+                } else {
+                    // GitHub-style green gradient scale
+                    const colors = ['#0e4429', '#006d32', '#26a641', '#39d353'];
+                    const idx = Math.min(Math.floor(l.opacity * (colors.length - 0.01)), colors.length - 1);
+                    c.style.background = colors[idx];
+                }
+                legendEl.appendChild(c);
+            });
+            legendEl.innerHTML += '<span style="margin-left:6px;">More</span>';
+
             renderActivityFeed();
+        }
+
+        function createHeatmapCell(count, maxCount, today, dayIndex) {
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            if (count > 0) {
+                // GitHub-style green graduated colors
+                const ratio = count / maxCount;
+                let color;
+                if (ratio <= 0.25) color = '#0e4429';
+                else if (ratio <= 0.5) color = '#006d32';
+                else if (ratio <= 0.75) color = '#26a641';
+                else color = '#39d353';
+                cell.style.backgroundColor = color;
+            }
+            const d = new Date(today);
+            d.setDate(today.getDate() - (90 - dayIndex));
+            const dateStr = d.toISOString().split('T')[0];
+            cell.setAttribute('data-tooltip', `${count} event${count!==1?'s':''} on ${dateStr}`);
+            return cell;
+        }
+
+        function trackMonth(today, dayIndex, weekIndex, monthsSeen) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - (90 - dayIndex));
+            if (monthsSeen[weekIndex] === undefined) {
+                monthsSeen[weekIndex] = d.getMonth();
+            }
         }
 
         function renderActivityFeed() {
             const feed = document.getElementById('activity-feed');
             feed.innerHTML = '';
-            const events = (currentUserData._events || []).slice(0, 15); // Top 15 events
-            
+            const events = (currentUserData._events || []).slice(0, 15);
+
             if (events.length === 0) {
                 feed.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No recent public activity found.</p>';
                 return;
             }
+
+            const eventColors = {
+                'PushEvent': '#8b5cf6',
+                'PullRequestEvent': '#3b82f6',
+                'IssuesEvent': '#f59e0b',
+                'WatchEvent': '#fbbf24',
+                'ForkEvent': '#34d399',
+                'CreateEvent': '#6366f1'
+            };
 
             events.forEach(ev => {
                 let actionText = 'Did something';
@@ -3146,15 +3541,19 @@ Return ONLY a strict JSON object (no markdown) with this EXACT structure:
                 else if (ev.type === 'CreateEvent') { actionText = `Created ${ev.payload.ref_type} in <strong>${ev.repo.name}</strong>`; icon = '📦'; }
 
                 const d = new Date(ev.created_at);
-                const timeStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const timeStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const accentColor = eventColors[ev.type] || 'var(--border)';
 
                 const item = document.createElement('div');
-                item.style.cssText = 'padding: 10px; background: var(--bg-glass-hover); border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem;';
-                item.innerHTML = `<div style="margin-bottom: 4px;">${icon} <span style="color:var(--text-main);">${actionText}</span></div>
-                                  <div style="color:var(--text-muted); font-size: 0.75rem;">⏱ ${timeStr}</div>`;
+                item.style.cssText = `padding: 10px 12px; background: var(--bg-glass-hover); border-radius: 10px; border: 1px solid var(--border); font-size: 0.83rem; border-left: 3px solid ${accentColor}; transition: transform 0.15s;`;
+                item.onmouseenter = () => item.style.transform = 'translateX(3px)';
+                item.onmouseleave = () => item.style.transform = '';
+                item.innerHTML = `<div style="margin-bottom: 3px;">${icon} <span style="color:var(--text-main);">${actionText}</span></div>
+                                  <div style="color:var(--text-muted); font-size: 0.72rem;">⏱ ${timeStr}</div>`;
                 feed.appendChild(item);
             });
         }
+
 
         function renderRepos(repos, sortType) {
             const list = document.getElementById('repo-list');
@@ -3300,7 +3699,7 @@ Return ONLY a strict JSON object (no markdown, no blocks) with this format:
         async function runCodeCritique(repo) {
             const geminiKey = getGeminiKey();
             if (!geminiKey) { alert("Gemini Key required for code critique. Please set it at the top of the page."); return; }
-            
+
             const btn = document.getElementById('btn-analyze-code');
             btn.disabled = true;
             btn.textContent = 'Fetching source tree & analyzing... ⏳';
@@ -3315,16 +3714,16 @@ Return ONLY a strict JSON object (no markdown, no blocks) with this format:
                 const branchRes = await fetch(`https://api.github.com/repos/${owner}/${repo.name}/branches/${repo.default_branch || 'main'}`, { headers });
                 if (!branchRes.ok) throw new Error("Could not read branch.");
                 const branchData = await branchRes.json();
-                
+
                 const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo.name}/git/trees/${branchData.commit.sha}?recursive=1`, { headers });
                 const treeData = await treeRes.json();
-                
+
                 // Find a viable code file
                 const codeFiles = (treeData.tree || []).filter(t => t.type === 'blob' && /\.(js|ts|py|go|rs|java|c|cpp|cs|php|rb)$/i.test(t.path));
                 if (codeFiles.length === 0) throw new Error("No primary source files found to analyze.");
-                
+
                 // Sort by descending size to find a substantial file, avoiding massive blobs
-                codeFiles.sort((a,b) => (b.size || 0) - (a.size || 0));
+                codeFiles.sort((a, b) => (b.size || 0) - (a.size || 0));
                 const targetFile = codeFiles.find(f => f.size > 200 && f.size < 40000) || codeFiles[0];
 
                 const blobRes = await fetch(`https://api.github.com/repos/${owner}/${repo.name}/git/blobs/${targetFile.sha}`, { headers });
@@ -3350,10 +3749,10 @@ ${fileContent.substring(0, 10000)}
                 const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: geminiBody
                 });
-                
+
                 const aiData = await aiRes.json();
                 const analysis = aiData.candidates[0].content.parts[0].text;
-                
+
                 // Append to chat
                 const chatHistory = document.getElementById('repo-chat-history');
                 chatHistory.innerHTML += `
@@ -3364,7 +3763,7 @@ ${fileContent.substring(0, 10000)}
                 `;
                 // Scroll to chat
                 document.getElementById('repo-chat-section').scrollIntoView({ behavior: 'smooth' });
-                
+
                 btn.textContent = 'Critique Completed ✔️';
                 setTimeout(() => { btn.textContent = 'Critique Code Quality 🤖'; btn.disabled = false; }, 3000);
 
@@ -3524,22 +3923,82 @@ ${fileContent.substring(0, 10000)}
                     let raw = await rRes.text();
                     currentRepoChatContext.readmeText = raw; // Save full readme for AI
 
-                    // Strip markdown noise for a clean summary: remove images, links, badges, HTML tags
-                    raw = raw.replace(/!\[.*?\]\(.*?\)/g, ''); // images
-                    raw = raw.replace(/<[^>]+>/g, '');           // HTML tags
-                    raw = raw.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1'); // keep link text
-                    raw = raw.replace(/^#+\s*/gm, '');           // headings
-                    raw = raw.replace(/^\s*[-*]\s*/gm, '• ');    // bullets
-                    raw = raw.replace(/\*\*(.*?)\*\*/g, '$1');   // bold
-                    raw = raw.replace(/\_\_(.*?)\_\_/g, '$1');   // bold alt
-                    raw = raw.replace(/\*(.*?)\*/g, '$1');       // italic
-                    raw = raw.replace(/\_(.*?)\_/g, '$1');       // italic alt
-                    raw = raw.replace(/`(.*?)`/g, '$1');         // inline code
-                    raw = raw.replace(/^[-*_]{3,}\s*$/gm, '');   // horizontal rules (---)
-                    raw = raw.replace(/\|/g, '');                // table characters (|)
-                    raw = raw.replace(/\n{2,}/g, '\n\n');        // excess whitespace
-                    const summary = raw.trim().substring(0, 1500);
-                    readmeText.textContent = summary + (raw.length > 1500 ? '…' : '');
+                    // Try AI summarization first
+                    const geminiKey = getGeminiKey();
+                    if (geminiKey && raw.length > 50) {
+                        readmeText.textContent = 'Generating AI summary…';
+                        readmeText.classList.remove('hidden');
+                        readmeLoading.style.display = 'none';
+
+                        try {
+                            const summaryPrompt = `Summarize the following GitHub README in 3-5 concise, informative sentences. Focus ONLY on what the project does, its key features, and its purpose. Do NOT include raw URLs, badge links, installation commands, or code snippets. Write in plain English prose only. If the README is mostly badges/links with little substance, say "This repository has limited documentation" and describe what you can infer from the repo name "${repo.name}" and description "${repo.description || ''}".
+
+README content:
+${raw.substring(0, 4000)}`;
+
+                            const summaryRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: summaryPrompt }] }],
+                                    generationConfig: { maxOutputTokens: 300 }
+                                })
+                            });
+
+                            if (summaryRes.ok) {
+                                const summaryData = await summaryRes.json();
+                                const aiSummary = summaryData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                                if (aiSummary && aiSummary.length > 20) {
+                                    readmeText.textContent = aiSummary;
+                                    readmeText.classList.remove('hidden');
+                                    readmeLoading.style.display = 'none';
+                                    return; // Done — AI summary succeeded
+                                }
+                            }
+                        } catch (aiErr) {
+                            console.warn('AI README summary failed, falling back to regex:', aiErr);
+                        }
+                    }
+
+                    // Fallback: improved regex stripping
+                    // 1. Remove code blocks first (```...```)
+                    raw = raw.replace(/```[\s\S]*?```/g, '');
+                    // 2. Remove badge images (shields.io, img.shields, etc.)
+                    raw = raw.replace(/!\[.*?\]\(.*?(shields\.io|badge|img\.shields|githubusercontent).*?\)/gi, '');
+                    // 3. Remove remaining images
+                    raw = raw.replace(/!\[.*?\]\(.*?\)/g, '');
+                    // 4. Remove HTML tags
+                    raw = raw.replace(/<[^>]+>/g, '');
+                    // 5. Keep link text, remove URLs
+                    raw = raw.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+                    // 6. Remove standalone URLs
+                    raw = raw.replace(/https?:\/\/[^\s\)]+/g, '');
+                    // 7. Remove install/command lines
+                    raw = raw.replace(/^[\s]*(npm|yarn|pip|cargo|brew|apt|sudo|curl|wget|git clone|docker|\$).*/gmi, '');
+                    // 8. Remove table separators and formatting
+                    raw = raw.replace(/^\|?[\s:-]+\|[\s:-|]+$/gm, '');
+                    raw = raw.replace(/^\|.*\|$/gm, '');
+                    // 9. Remove headings markers
+                    raw = raw.replace(/^#+\s*/gm, '');
+                    // 10. Convert bullets
+                    raw = raw.replace(/^\s*[-*]\s*/gm, '• ');
+                    // 11. Strip markdown formatting
+                    raw = raw.replace(/\*\*(.*?)\*\*/g, '$1');
+                    raw = raw.replace(/__(.*?)__/g, '$1');
+                    raw = raw.replace(/\*(.*?)\*/g, '$1');
+                    raw = raw.replace(/_(.*?)_/g, '$1');
+                    raw = raw.replace(/`(.*?)`/g, '$1');
+                    // 12. Remove horizontal rules
+                    raw = raw.replace(/^[-*_]{3,}\s*$/gm, '');
+                    // 13. Remove lines that are just emoji/whitespace/short artifacts
+                    raw = raw.replace(/^[\s🔥⭐🚀💡📦🎯✨🔧📝🐛💻🔗📋🎨🛠️✅❌⚡🌟💾📊🔒🔑📌🏗️]+$/gm, '');
+                    // 14. Remove lines shorter than 3 printable chars
+                    raw = raw.split('\n').filter(line => line.trim().replace(/[•\s]/g, '').length > 2).join('\n');
+                    // 15. Collapse whitespace
+                    raw = raw.replace(/\n{3,}/g, '\n\n');
+
+                    const summary = raw.trim().substring(0, 1200);
+                    readmeText.textContent = summary + (raw.trim().length > 1200 ? '…' : '') || 'No meaningful content found in README.';
                     readmeText.classList.remove('hidden');
                 } else {
                     readmeError.textContent = rRes.status === 403
@@ -3554,6 +4013,7 @@ ${fileContent.substring(0, 10000)}
                 readmeLoading.style.display = 'none';
             }
         }
+
 
         // --- Deep Dive Chat Event Listener ---
         document.getElementById('repo-chat-form').addEventListener('submit', async (e) => {
